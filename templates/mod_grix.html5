@@ -1,0 +1,225 @@
+
+<div class="grixJs">
+
+	<div id="tl_buttons">
+		<a href="<?= $this->href ?>" class="header_back" title="<?= $this->title ?>"><?= $this->button ?></a>
+	</div>
+
+	
+	<div class="grix_loader"></div>
+
+
+	<div class="grix_device_wrap">
+		<a href="#" class="grix_toggle_preview">
+			<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/preview.svg"); ?>
+		</a>
+		<a href="#" class="grix_device_switch grix_device_switch_prev" data-direction="prev" >
+			<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+		</a>
+		<!-- <ul> -->
+			<!-- <li> -->
+				<a href="#" class="grix_device" data-device="xs" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoXs'] ?>">
+					<span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceXs'] ?></span>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_small-mobile.svg"); ?>
+				</a>
+				<a href="#" class="grix_device" data-device="sm" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoSm'] ?>" >
+					<span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceSm'] ?></span>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_mobile.svg"); ?>
+				</a>
+				<a href="#" class="grix_device" data-device="md" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoMd'] ?>" >
+					<span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceMd'] ?></span>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_tablet.svg"); ?>
+				</a>
+				<a href="#" class="grix_device active" data-device="lg" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoLg'] ?>" >
+					<span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceLg'] ?></span>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_desktop.svg"); ?>
+				</a>
+			<!-- </li> -->
+		<!-- </ul> -->
+		<a href="#" class="grix_device_switch grix_device_switch_next" data-direction="next" >
+			<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+		</a>
+	</div>
+	<div class="grix"></div>
+
+	<form id="grixBeForm" action="<?= $this->action ?>" method="post">
+
+		<input type="hidden" name="FORM_SUBMIT" value="tl_grix">
+		<input type="hidden" name="REQUEST_TOKEN" value="<?= REQUEST_TOKEN ?>">
+		<input type="hidden" name="articleId" value="<?= $this->id ?>">
+
+	 	<div class="grix_input_wrap">
+			<textarea class="grix_input" name="grixJs" id="ctrl_grixJson" ><?= $this->data ?></textarea>
+			<label for="textarea" >grixJs</label>
+	 	</div>
+
+		<div class="grix_input_wrap">
+	 		<textarea class="grix_input" name="grixHtmlFrontend" id="ctrl_grixHtmlFrontend" ><?= $this->grixHtmlFrontend ?></textarea>
+			<label for="textarea" >grixHtmlFrontend</label>
+		</div>
+
+        <div class="tl_formbody_submit">    
+            <div class="tl_submit_container">
+			 	<input class="tl_submit grix_save" type="submit" value="<?= $this->submit ?>" />
+			 	<input class="tl_submit" type="submit" value="<?= $this->delete ?>" id="grix_deleteAll" />
+            </div>    
+        </div>   
+
+	</form>
+
+	<ul class="grix_celist">
+		<?php foreach ($this->ces as $arrCE) : ?>
+			<li class='grix_ce' id='grixce_<?= $arrCE["id"] ?>' data-ceid='<?= $arrCE["id"] ?>' >
+				<?= $arrCE["html"] ?>
+			</li>
+		<?php endforeach; ?>
+	</ul>
+
+	<div class="grix_beautyfied"></div>
+
+
+
+	<div class="grix_lb">
+
+		<div class="grix_lb_overlay">
+		</div>
+
+		<div class="grix_lb_content">
+			<div class="grix_lb_inner">
+				
+				<div class="grix_lb_section grix_lb_classes">
+					<h1><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseClasses'] ?></h1>
+					<ul>
+					<?php foreach ($this->classes as $arrClass) : ?>
+						<li data-alias="<?= $arrClass["alias"] ?>" class="grix_lb_class"><?= $arrClass["name"] ?></li>
+					<?php endforeach; ?>				
+					</ul>
+				</div>
+
+				<div class="grix_lb_section grix_lb_bootstrap">
+					<h1><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseClasses'] ?></h1>
+					<div class="row">
+						<div class="col-md-3">
+							<h1>Base</h1>
+							<?php 
+							$output = file_get_contents(TL_ROOT."/system/modules/gp_grix/templates/colmenu.html");
+							$output = str_replace('data-device="lg"', 'data-device="xs"', $output);
+							echo $output;
+							?>
+						</div>
+						<div class="col-md-3">
+							<h1>Mobile <em>768px</em></h1>
+							<?php 
+							$output = file_get_contents(TL_ROOT."/system/modules/gp_grix/templates/colmenu.html");
+							$output = str_replace('data-device="lg"', 'data-device="sm"', $output);
+							echo $output;
+							?>					</div>
+						<div class="col-md-3">
+							<h1>Tablet <em>992px</em></h1>
+							<?php 
+							$output = file_get_contents(TL_ROOT."/system/modules/gp_grix/templates/colmenu.html");
+							$output = str_replace('data-device="lg"', 'data-device="md"', $output);
+							echo $output;
+							?>
+						</div>
+						<div class="col-md-3">
+							<h1>Desktop <em>1200px</em></h1>
+							<?php 
+							$output = file_get_contents(TL_ROOT."/system/modules/gp_grix/templates/colmenu.html");
+							echo $output;
+							?>
+						</div>
+					</div>
+				</div>
+
+				<div class="grix_lb_section grix_lb_overview">
+					<h1><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseCE'] ?></h1>
+					<div class="grix_lb_articles">
+						<h3><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseArticle'] ?></h3>
+						<select>                  
+						  <?php foreach ($this->allArticles as $t => $group): ?>
+						      <optgroup label="<?= $t ?>">
+						          <?php foreach ($group as $key => $value): ?>
+						              <option value="<?= $key ?>"><?= $value ?></option>
+						          <?php endforeach; ?>
+						      </optgroup>
+						  <?php endforeach; ?>
+						</select>
+					</div>
+					<div class="grix_lb_ces">
+						<ul>
+						<?php foreach ($this->ces as $arrCE) : ?>
+							<li class='grix_lb_ce' data-ceid='<?= $arrCE["id"] ?>' >
+								<div class="grix_lb_ce_inner" id='grixce_<?= $arrCE["id"] ?>' >
+									<?= $arrCE["html"] ?>
+								</div>
+							</li>
+						<?php endforeach; ?>				
+						</ul>
+					</div>
+					
+				</div>
+
+
+			</div>
+
+			<div class="grix_lb_footer">
+				<a title="Anwenden" id="grix_lb_apply" class="button primary">Anwenden</a>
+				<a title="<?= $GLOBALS['TL_LANG']['tl_grix']['lbCancel'] ?>" class="button grix_lb_cancel"><?= $GLOBALS['TL_LANG']['tl_grix']['lbCancel'] ?></a>
+			</div>
+		</div>
+	</div>
+
+
+	<script type="text/javascript">
+
+	(function($){
+		$(document).ready(function(){
+
+			// Create a GrixLightbox instance
+			var grixLightbox = new GrixLightbox();
+			grixLightbox.bindEvents();
+
+			var obCfg = {
+				articleId : <?= $this->id ?> ,
+				data : JSON.parse('<?= $this->data ?>'),
+				grixLightbox : grixLightbox,
+				requTok : '<?= REQUEST_TOKEN ?>'
+			}
+
+			// Create a Grix instance
+			var grix = new Grix(obCfg);
+			grix.init();
+			
+			$('#grix_deleteAll').click(function(e){
+				console.log('delete all');				
+				var obRow = new GrixRow();
+				obRow.addCol(new GrixCol());
+				stJson = "["+JSON.stringify(obRow)+"]";
+				// console.log(stJson);
+				// arGrixJs = [stJson];
+				// console.log(arGrixJs);
+				$('#ctrl_grixJson').val(stJson);
+
+				// $('#ctrl_grixJson').val('[{"type":"row","unitsConf":{"xs":"12","sm":"12","md":"12","lg":"12"},"classes":"","elements":[{"type":"col","boot":{"xs":"12","sm":"12","md":"12","lg":"12"},"classes":"","elements":[]}]}]')
+				$('#grixBeForm').submit();
+				e.preventDefault();
+			})
+
+
+			// testing:
+			// grixLightbox.activate();
+
+		});
+	})(jQuery);
+
+	</script>
+
+
+
+
+</div>
+
+
+
+
