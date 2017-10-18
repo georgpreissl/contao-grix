@@ -15,5 +15,5 @@ The module still contains some bugs and should not be used for productive websit
 
 How to change the width of a column
 1. First click on the column and activate it. When the column is activated, it appears green.
-2. Use the cursor buttons on the left and right to change the width of the column.
+2. Use the the left and right cursor keys to change the width of the column.
 3. Use the Escape key to cancel the column activation.
