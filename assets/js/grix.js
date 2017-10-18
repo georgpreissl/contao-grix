@@ -18,7 +18,7 @@
 			    // Left/right arrow keys
 			    if (e.keyCode == 39 || e.keyCode == 37) {
 			    	
-				console.log(e.keyCode);
+					// console.log(e.keyCode);
 					if (boColAct) {
 						// A column is active, change unit values
 				    	$('.c.active').each(function(index, el) {
@@ -27,8 +27,8 @@
 					    	var arCols = obRow.elements;
 					    	var obCol = obRow.elements[obRow.pos];
 					    	var nrU = obCol.boot[device];
-							console.log(e.keyCode);
-							console.log('nrU before:',nrU);
+							// console.log(e.keyCode);
+							// console.log('nrU before:',nrU);
 						    if (e.keyCode == 39) { 
 						    	nrU++;
 						    	e.preventDefault();
@@ -38,7 +38,7 @@
 						    	e.preventDefault();
 
 						    }
-							console.log('nrU after:',nrU);
+							// console.log('nrU after:',nrU);
 						    obCol.boot[device] = nrU;
 				    	});
 						drawGrix();
@@ -62,7 +62,7 @@
 			    // Esc-key – unselect every column
 			    if (e.keyCode == 27) { 
 					if (boColAct) {
-				    	console.log('unselect');
+				    	// console.log('unselect');
 				    	arColAct = [];
 				    	$('.c').removeClass('active');
 				    	boColAct = false;
