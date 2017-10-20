@@ -771,22 +771,22 @@
 								<div class='menu r_menu cf' data-id='"+stNewId+"' data-type='row' >\
 									<a class='btn add_col' data-type='row' ></a>\
 									<a class='btn add_row' data-type='row' ></a>\
+									<a class='btn adj_ele' ></a>\
 									<div class='btn split_col' style='background-image:url(system/modules/gp_grix/assets/img/col-icons/col-icon-"+obEl.unitsConf[device]+".png)' >\
 										<div class='h_menu h_menu_split_col'>\
-												<a class='btn hmi_sc' data-units='12' ></a>\
-												<a class='btn hmi_sc' data-units='6-6' ></a>\
-												<a class='btn hmi_sc' data-units='3-3-3-3' ></a>\
-												<a class='btn hmi_sc' data-units='3-9' ></a>\
-												<a class='btn hmi_sc' data-units='9-3' ></a>\
-												<a class='btn hmi_sc' data-units='3-3-6' ></a>\
-												<a class='btn hmi_sc' data-units='6-3-3' ></a>\
-												<a class='btn hmi_sc' data-units='3-6-3' ></a>\
-												<a class='btn hmi_sc' data-units='4-4-4' ></a>\
-												<a class='btn hmi_sc' data-units='4-8' ></a>\
-												<a class='btn hmi_sc' data-units='8-4' ></a>\
+											<a class='btn hmi_sc' data-units='12' ></a>\
+											<a class='btn hmi_sc' data-units='6-6' ></a>\
+											<a class='btn hmi_sc' data-units='3-3-3-3' ></a>\
+											<a class='btn hmi_sc' data-units='3-9' ></a>\
+											<a class='btn hmi_sc' data-units='9-3' ></a>\
+											<a class='btn hmi_sc' data-units='3-3-6' ></a>\
+											<a class='btn hmi_sc' data-units='6-3-3' ></a>\
+											<a class='btn hmi_sc' data-units='3-6-3' ></a>\
+											<a class='btn hmi_sc' data-units='4-4-4' ></a>\
+											<a class='btn hmi_sc' data-units='4-8' ></a>\
+											<a class='btn hmi_sc' data-units='8-4' ></a>\
 										</div>\
 									</div>\
-									<a class='btn adj_ele' ></a>\
 									<a class='btn reorder' data-dir='up' ></a>\
 									<a class='btn reorder' data-dir='down' ></a>\
 									<a class='btn del_row' ></a>\
