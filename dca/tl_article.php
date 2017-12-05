@@ -37,6 +37,7 @@ $GLOBALS['TL_DCA']['tl_article']['fields']['grixHtmlFrontend'] = array
 $GLOBALS['TL_DCA']['tl_article']['palettes']['default'] .= ',grixToggle';
 
 
+// Decides whether the content elements of the article will be output via the module grix...
 $GLOBALS['TL_DCA']['tl_article']['fields']['grixToggle'] = array
 (
 	'label'         => &$GLOBALS['TL_LANG']['tl_article']['grixToggle'],
@@ -48,7 +49,7 @@ $GLOBALS['TL_DCA']['tl_article']['fields']['grixToggle'] = array
 
 
 
-
+// CE ids which are used by grix in the current article
 $GLOBALS['TL_DCA']['tl_article']['fields']['CEsUsed'] = array
 (
 	'label'         => &$GLOBALS['TL_LANG']['tl_article']['CEsUsed'],

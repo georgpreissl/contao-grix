@@ -23,5 +23,4 @@ $objResult = Database::getInstance()->prepare("SELECT grixJs from tl_article WHE
 echo $objResult->grixJs;
 
 
-
 ?>

@@ -289,6 +289,7 @@
 				url: 'system/modules/gp_grix/ajax/ajax_save.php',
 				data: stFormData,
 				success: function(data){
+					// console.log(data);
 					// Status has been saved, now create the new CE
 					window.location.href = 'contao/main.php?do=article&table=tl_content&act=create&mode=2&pid='+obGrixCfg.articleId+'&id='+obGrixCfg.articleId+'&grix=create&rt='+obGrixCfg.requTok+'&phid='+stPhId;
 				},

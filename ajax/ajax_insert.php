@@ -5,7 +5,9 @@
 
 
 
-
+$grixjs = $_GET['grixjs'];  
+$articleId = $_GET['articleId'];  
+$ceId = $_GET['ceId'];  
 
 
 
@@ -20,17 +22,17 @@ require($path);
 
 
 
-$grixjs = \Input::get('grixjs');  
-$articleId = \Input::get('articleId');  
-$ceId = \Input::get('ceId');  
+
 
 
 
 // Insert the new grix data
 $objResult = Database::getInstance()->prepare("UPDATE tl_article SET grixJs=? WHERE id=?")->execute($grixjs, $articleId);
 
-// Update the used CEs for this article
+// Get the used CEs for this article as a database object
 $objUsedCEs = Database::getInstance()->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($articleId);
+
+// Unserialize the CEsUsed property
 $arrUsedCEs = unserialize($objUsedCEs->CEsUsed);
 
 if (!is_array($arrUsedCEs))
@@ -38,6 +40,7 @@ if (!is_array($arrUsedCEs))
 	$arrUsedCEs = array();
 }
 
+// Update the used CEs for this article
 if (!in_array($ceId, $arrUsedCEs)) {
     $arrUsedCEs[] = $ceId;
 	$data = serialize($arrUsedCEs);
@@ -50,3 +53,4 @@ if (!in_array($ceId, $arrUsedCEs)) {
 echo 'done!';
 
 
+?>

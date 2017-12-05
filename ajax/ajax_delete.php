@@ -2,6 +2,7 @@
 
 
 
+$id = $_GET['id'];  
 
 
 define('TL_MODE', 'FE');
@@ -12,7 +13,6 @@ require($path);
 
 
 
-$id = \Input::get('id');  
 
 $objResult = Database::getInstance()->prepare("DELETE FROM tl_content WHERE id=?")->execute($id);
 echo 'done!';

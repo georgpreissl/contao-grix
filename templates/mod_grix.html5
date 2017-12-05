@@ -163,6 +163,7 @@
 
 			</div>
 
+
 			<div class="grix_lb_footer">
 				<a title="Anwenden" id="grix_lb_apply" class="button primary">Anwenden</a>
 				<a title="<?= $GLOBALS['TL_LANG']['tl_grix']['lbCancel'] ?>" class="button grix_lb_cancel"><?= $GLOBALS['TL_LANG']['tl_grix']['lbCancel'] ?></a>
@@ -195,7 +196,7 @@
 				console.log('delete all');				
 				var obRow = new GrixRow();
 				obRow.addCol(new GrixCol());
-				stJson = "["+JSON.stringify(obRow)+"]";
+				var stJson = "["+JSON.stringify(obRow)+"]";
 				// console.log(stJson);
 				// arGrixJs = [stJson];
 				// console.log(arGrixJs);
@@ -220,6 +221,8 @@
 
 </div>
 
+			<p>Number of CEs in this article: <?= $this->nrCEs; ?></p>
+			<p>CE-id's used by grix: <?= $this->usedCEs; ?></p>
 
 
 

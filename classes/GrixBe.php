@@ -51,7 +51,7 @@ class GrixBe extends \BackendModule
 			array_unshift($GLOBALS['TL_JAVASCRIPT'], $strJQuerySrc);
 
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/jquery-ui-1.12.1/jquery-ui.min.js';
-			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/GrixElement.js';
+			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grixElement.js';
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grixLightbox.js';
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grix.js';
 			$GLOBALS['TL_CSS'][] = 'system/modules/gp_grix/assets/css/grix_backend.css';
@@ -61,17 +61,18 @@ class GrixBe extends \BackendModule
 
 
 		// get the id of the article to edit
+		// eg. main.php ? do=grixbe & id=4 & ref=f450a0f36c3019d4030aeab540292c3d
 		$id = \Input::get('id');
 
 
+		// if grix is activated in the backend-module-pannel
+		// under construticon!!!
 		if(!$id)
 		{
 			$arrPages = array();
 			// get all
 			$objPages = \PageModel::findAll();
 			// var_dump($objPages);
-
-			
 
 			if (null !== $objPages)  {
 				while($objPages->next()) {
@@ -94,8 +95,6 @@ class GrixBe extends \BackendModule
 				}
 			}
 
-
-
 			$objTemplate = new \BackendTemplate('mod_grix_articles');
 			$this->Template = $objTemplate;
 			$this->Template->m = 'hello';
@@ -115,17 +114,45 @@ class GrixBe extends \BackendModule
 			// save the js string
 			$grixJs = $_POST['grixJs'];
 			$this->Database->prepare("UPDATE tl_article SET grixJs=? WHERE id=?")->execute($grixJs, $id);
-
 		}
 
 
 		// get all the CEs of this article
-		//$objCEs = \ContentModel::findPublishedByPidAndTable($id,'tl_article');
+		$objCEs = \ContentModel::findPublishedByPidAndTable($id,'tl_article');
+	    if ($objCEs !== null) {
+	        $intNrCEs = $objCEs->count();
+	        // var_dump($intNrCEs);
+	        $intLast = $objCEs->count() - 1;
+	        $arrCeStart = array();
 
-		// get all the CEs used in this article
+	        while ($objCEs->next()) {
+	            $arrCss = array();
+	            /** @var \ContentModel $objCE */
+	            $objCE = $objCEs->current();
+	            $arrCeStart[] = $objCE->id;
+	            // var_dump($objCE->id);
+	            // printf('<pre>%s</pre>', print_r($objCE,true));
+
+	        }
+	    }
+		// var_dump($arrCeStart);
+		// printf('<pre>%s</pre>', print_r($arrCeStart,true));
+		// printf('<pre>%s</pre>', print_r($objCEs,true));
+
+		// get all the CEs used by Grix (also includes imported ones)
 		$objUsedCEs = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($id);
 		$arrUsedCEs = unserialize($objUsedCEs->CEsUsed);
-		$objCEs = \ContentModel::findMultipleByIds($arrUsedCEs);
+		// var_dump($arrUsedCEs);
+		if ($arrUsedCEs==false) {
+			$arrUsedCEs = array();
+		}
+
+$arrFinal = array_merge($arrCeStart,$arrUsedCEs);
+		
+$arrFinal = array_unique($arrFinal);
+// printf('<pre>%s</pre>', print_r($arrFinal,true));
+
+		$objCEs = \ContentModel::findMultipleByIds($arrFinal);
 
 		// store the CEs in an array
 		$arrCEs = array();
@@ -196,7 +223,11 @@ class GrixBe extends \BackendModule
 
 		$this->Template->allArticles = $this->getArticleAlias();
 		$this->Template->classes = $arrClasses;
-;
+
+		// for debugging
+		$this->Template->nrCEs = $intNrCEs;
+		$this->Template->usedCEs = implode(", ", $arrUsedCEs);
+
 		
 	}
 

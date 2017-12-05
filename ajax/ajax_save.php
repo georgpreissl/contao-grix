@@ -13,7 +13,8 @@ $path = substr($path, 0, -15) . 'initialize.php';
 require($path);
 
 $objResult = Database::getInstance()->prepare("UPDATE tl_article SET grixJs=? WHERE id=?")->execute($grixjs, $articleId);
-echo 'done!';
+echo $objResult->affectedRows;
+// echo 'done!';
 
 
 
