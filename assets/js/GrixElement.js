@@ -1,6 +1,6 @@
 // define the GrixElement Class
 function GrixElement() {
-    this.type = "el";
+	this.type = "el";
 }
 
 GrixElement.prototype.walk = function(){
@@ -17,20 +17,38 @@ GrixElement.prototype.sayHello = function(){
 // define the GrixCol class
 function GrixCol() {
 
-    // Call the parent constructor
-    GrixElement.call(this);
+	// Call the parent constructor
+	GrixElement.call(this);
 
 
-    this.type = 'col';
-    // this.units = '12';
-    this.boot = {
-        xs:"12",
-        sm:"12",
-        md:"12",
-        lg:"12"
-    };
-    this.classes = '';
-    this.elements = [];
+	this.type = 'col';
+	// this.units = '12';
+	this.width = {
+		xs:"x",
+		sm:"x",
+		md:"x",
+		lg:"x"
+	};
+	this.offset = {
+		xs:"x",
+		sm:"x",
+		md:"x",
+		lg:"x"
+	};	
+	this.push = {
+		xs:"x",
+		sm:"x",
+		md:"x",
+		lg:"x"
+	};
+	this.pull = {
+		xs:"x",
+		sm:"x",
+		md:"x",
+		lg:"x"
+	};
+	this.classes = '';
+	this.elements = [];
 
 
 }
@@ -58,26 +76,26 @@ GrixCol.prototype.sayGoodBye = function(){
 // define the GrixRow class
 function GrixRow() {
 
-    // Call the parent constructor
-    GrixElement.call(this);
+	// Call the parent constructor
+	GrixElement.call(this);
 
 
-    this.type = 'row';
-    this.unitsConf = {
-        xs:"12",
-        sm:"12",
-        md:"12",
-        lg:"12"
-    };
-    // this.units = '12';
-    // this.boot = {
-    //     xs:12,
-    //     sm:12,
-    //     md:12,
-    //     lg:12
-    // };
-    this.classes = '';
-    this.elements = [];
+	this.type = 'row';
+	this.unitsConf = {
+		xs:"12",
+		sm:"12",
+		md:"12",
+		lg:"12"
+	};
+	// this.units = '12';
+	// this.boot = {
+	//     xs:12,
+	//     sm:12,
+	//     md:12,
+	//     lg:12
+	// };
+	this.classes = '';
+	this.elements = [];
 
 
 }
@@ -91,7 +109,7 @@ GrixRow.prototype.constructor = GrixRow;
 
 // replace the sayHello method
 GrixRow.prototype.addCol = function(obCol){
-    this.elements.push(obCol);
+	this.elements.push(obCol);
 }
 
 

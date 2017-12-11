@@ -1,46 +1,110 @@
 
-<div class="grixJs">
+<div class="grix">
 
 	<div id="tl_buttons">
 		<a href="<?= $this->href ?>" class="header_back" title="<?= $this->title ?>"><?= $this->button ?></a>
 	</div>
 
 	
-	<div class="grix_loader"></div>
-
-
-	<div class="grix_device_wrap">
-		<a href="#" class="grix_toggle_preview">
-			<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/preview.svg"); ?>
-		</a>
-		<a href="#" class="grix_device_switch grix_device_switch_prev" data-direction="prev" >
-			<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
-		</a>
-		<!-- <ul> -->
-			<!-- <li> -->
-				<a href="#" class="grix_device" data-device="xs" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoXs'] ?>">
-					<span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceXs'] ?></span>
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_small-mobile.svg"); ?>
-				</a>
-				<a href="#" class="grix_device" data-device="sm" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoSm'] ?>" >
-					<span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceSm'] ?></span>
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_mobile.svg"); ?>
-				</a>
-				<a href="#" class="grix_device" data-device="md" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoMd'] ?>" >
-					<span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceMd'] ?></span>
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_tablet.svg"); ?>
-				</a>
-				<a href="#" class="grix_device active" data-device="lg" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoLg'] ?>" >
-					<span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceLg'] ?></span>
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_desktop.svg"); ?>
-				</a>
-			<!-- </li> -->
-		<!-- </ul> -->
-		<a href="#" class="grix_device_switch grix_device_switch_next" data-direction="next" >
-			<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
-		</a>
+	<div class="grix_loader">
 	</div>
-	<div class="grix"></div>
+
+
+	<div class="grix_menu">
+
+
+		<div class="button_wrap button_preview_wrap">
+			<div class="buttons">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['preview'] ?>" class="grix_button grix_toggle_preview">
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/preview.svg"); ?>
+				</a>
+			</div>
+			<div class="buttons_label">preview</div>
+		</div>
+
+
+		<div class="button_wrap button_devices_wrap">
+			<div class="buttons">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceChange'] ?>" class="grix_button grix_device_switch grix_device_switch_prev" data-direction="prev" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+				</a>
+				<div class="devices">
+					<a href="#" class="grix_button grix_device" data-device="xs" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoXs'] ?>">
+						<!-- <span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceXs'] ?></span> -->
+						<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_small-mobile.svg"); ?>
+					</a>
+					<a href="#" class="grix_button grix_device" data-device="sm" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoSm'] ?>" >
+						<!-- <span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceSm'] ?></span> -->
+						<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_mobile.svg"); ?>
+					</a>
+					<a href="#" class="grix_button grix_device" data-device="md" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoMd'] ?>" >
+						<!-- <span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceMd'] ?></span> -->
+						<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_tablet.svg"); ?>
+					</a>
+					<a href="#" class="grix_button grix_device active" data-device="lg" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceInfoLg'] ?>" >
+						<!-- <span><?= $GLOBALS['TL_LANG']['tl_grix']['deviceLg'] ?></span> -->
+						<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/device-icons/dev_desktop.svg"); ?>
+					</a>
+				</div>
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['deviceChange'] ?>" class="grix_button grix_device_switch grix_device_switch_next" data-direction="next" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+				</a>
+			</div>
+			<div class="buttons_label">device</div>
+		</div>
+
+		<div class="button_wrap button_width_wrap">
+			<div class="buttons">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_width_minus'] ?>" class="grix_button grix_bt grix_bt_width" data-bt="width" data-dir="minus" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+				</a>
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_width_plus'] ?>" class="grix_button grix_bt grix_bt_width" data-bt="width" data-dir="plus" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+				</a>
+			</div>
+			<div class="buttons_label">width <span class="info info_width"></span></div>
+		</div>
+
+		<div class="button_wrap button_offset_wrap">
+			<div class="buttons">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_offset_minus'] ?>" class="grix_button grix_bt grix_bt_offset" data-bt="offset" data-dir="minus" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+				</a>
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_offset_plus'] ?>" class="grix_button grix_bt grix_bt_offset" data-bt="offset" data-dir="plus" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+				</a>
+			</div>
+			<div class="buttons_label">offset <span class="info info_offset"></span></div>
+		</div>
+
+		<div class="button_wrap button_push_wrap">
+			<div class="buttons">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_push_minus'] ?>" class="grix_button grix_bt grix_bt_push" data-bt="push" data-dir="minus" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+				</a>
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_push_plus'] ?>" class="grix_button grix_bt grix_bt_push" data-bt="push" data-dir="plus" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+				</a>
+			</div>
+			<div class="buttons_label">push <span class="info info_push"></span></div>
+		</div>
+
+		<div class="button_wrap button_pull_wrap ">
+			<div class="buttons">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_pull_minus'] ?>" class="grix_button grix_bt grix_bt_pull" data-bt="pull" data-dir="minus" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+				</a>
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_pull_plus'] ?>" class="grix_button grix_bt grix_bt_pull" data-bt="pull" data-dir="plus" >
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+				</a>
+			</div>
+			<div class="buttons_label">pull <span class="info info_pull"></span></div>
+		</div>
+
+	</div>
+
+	<div class="grix_grid">
+	</div>
 
 	<form id="grixBeForm" action="<?= $this->action ?>" method="post">
 
@@ -58,8 +122,8 @@
 			<label for="textarea" >grixHtmlFrontend</label>
 		</div>
 
-        <div class="tl_formbody_submit">    
-            <div class="tl_submit_container">
+        <div class="grix_save">    
+            <div class="">
 			 	<input class="tl_submit grix_save" type="submit" value="<?= $this->submit ?>" />
 			 	<input class="tl_submit" type="submit" value="<?= $this->delete ?>" id="grix_deleteAll" />
             </div>    
@@ -181,9 +245,17 @@
 			var grixLightbox = new GrixLightbox();
 			grixLightbox.bindEvents();
 
+			var data = '<?= $this->data ?>';
+			// console.log(data);
+			if (data=='') {
+				var obRow = new GrixRow();
+				obRow.addCol(new GrixCol());
+				data = "["+JSON.stringify(obRow)+"]";			
+			};
+
 			var obCfg = {
 				articleId : <?= $this->id ?> ,
-				data : JSON.parse('<?= $this->data ?>'),
+				data : JSON.parse(data),
 				grixLightbox : grixLightbox,
 				requTok : '<?= REQUEST_TOKEN ?>'
 			}
@@ -198,11 +270,9 @@
 				obRow.addCol(new GrixCol());
 				var stJson = "["+JSON.stringify(obRow)+"]";
 				// console.log(stJson);
-				// arGrixJs = [stJson];
-				// console.log(arGrixJs);
+
 				$('#ctrl_grixJson').val(stJson);
 
-				// $('#ctrl_grixJson').val('[{"type":"row","unitsConf":{"xs":"12","sm":"12","md":"12","lg":"12"},"classes":"","elements":[{"type":"col","boot":{"xs":"12","sm":"12","md":"12","lg":"12"},"classes":"","elements":[]}]}]')
 				$('#grixBeForm').submit();
 				e.preventDefault();
 			})
@@ -214,15 +284,27 @@
 		});
 	})(jQuery);
 
+
+
+
+
 	</script>
 
 
 
 
 </div>
-
-			<p>Number of CEs in this article: <?= $this->nrCEs; ?></p>
-			<p>CE-id's used by grix: <?= $this->usedCEs; ?></p>
+<div class="grix_debug_article">
+	
+	<h2>Content elements contained in this article</h2>
+	<p>Number: <?= $this->CEsNr; ?></p>
+	<p>IDs: <?= $this->CEs; ?></p>
+	<br>
+	<h2>Content elements used by grix in this article<br>
+		<em>(Simply only the elements used in the grid above)</em></h2>
+	<p>Number: <?= $this->CEsUsedNr; ?></p>
+	<p>IDs: <?= $this->CEsUsed; ?></p>
+</div>
 
 
 

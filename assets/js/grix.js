@@ -1,74 +1,77 @@
 (function($){
 
 
+
+
+
 	window.Grix = function(obGrixCfg){
 
 		var obData = obGrixCfg.data;
 		var level = 0;
 		var device = 'lg';
-		var boColAct = false;
-		var stActCol = undefined;
+		var boColIsAct = false;
 		var arColAct = [];
+		var arResKeys = [37,39,27,32];
+		var arBootProps = ['width','offset','push','pull'];
 
 		this.init = function(){
 
+			$('body').addClass('grix_lg');
+
 			$(document).keydown(function(e){
+				var key = e.keyCode;
+				// console.log(key);
+			    // 37 = left
+			    // 39 = right
+			    // 27 = esc
+			    // 32 = space bar
+			    if (arResKeys.indexOf(key) != -1) {
 
-
-			    // Left/right arrow keys
-			    if (e.keyCode == 39 || e.keyCode == 37) {
-			    	
-					// console.log(e.keyCode);
-					if (boColAct) {
-						// A column is active, change unit values
-				    	$('.c.active').each(function(index, el) {
-				    		
-					    	var obRow = getObjectsById($(this));
-					    	var arCols = obRow.elements;
-					    	var obCol = obRow.elements[obRow.pos];
-					    	var nrU = obCol.boot[device];
-							// console.log(e.keyCode);
-							// console.log('nrU before:',nrU);
-						    if (e.keyCode == 39) { 
-						    	nrU++;
-						    	e.preventDefault();
+			    	// left and right keys
+			    	if (key == 39 || key == 37) {
+						if (arColAct.length) {
+							// a column is active, change unit values
+					    	$('.c.active').each(function(index, el) {
+					    		
+						    	var obRow = getObjectsById($(this));
+						    	var arCols = obRow.elements;
+						    	var obCol = obRow.elements[obRow.pos];
+						    	var nrU = obCol.width[device];
+							    key == 39 ? nrU++ : nrU--;
+							    obCol.width[device] = String(nrU);
+					    	});
+					    	// redraw the grid every time the col units are changed
+							drawGrix();
+							addUi();
+						} else {
+						    // no column active, change device
+						    if (key == 39) {
+						    	$('.grix_device_switch_next').trigger('click');
 						    }
-						    if (e.keyCode == 37) { 
-						    	nrU--;
-						    	e.preventDefault();
-
+						    if (key == 37) {
+						    	$('.grix_device_switch_prev').trigger('click');
 						    }
-							// console.log('nrU after:',nrU);
-						    obCol.boot[device] = nrU;
-				    	});
-						drawGrix();
-						addUi();
-				    
-					} else {
-					    // No column active, change device
-					    if (e.keyCode == 39) {
-					    	$('.grix_device_switch_next').trigger('click');
-					    	e.preventDefault();
-					    }
-					    if (e.keyCode == 37) {
-					    	$('.grix_device_switch_prev').trigger('click');
-					    	e.preventDefault();
+						}
+			    	}
 
-					    }
-						
-					}
+				    // esc-key – unselect every column
+				    if (key == 27) { 
+						if (boColIsAct) {
+					    	// console.log('unselect');
+					    	arColAct = [];
+					    	$('.c').removeClass('active');
+					    	boColIsAct = false;
+					    	$(".info").text('');
+				    	}
+				    }
+
+				    // space bar – toggle preview
+				    if (key == 32) { 
+						$('body').toggleClass('grix_preview');
+				    }
+			    	e.preventDefault();
 				}
 					
-			    // Esc-key – unselect every column
-			    if (e.keyCode == 27) { 
-					if (boColAct) {
-				    	// console.log('unselect');
-				    	arColAct = [];
-				    	$('.c').removeClass('active');
-				    	boColAct = false;
-				    	e.preventDefault();
-			    	}
-			    }
 
 			});
 
@@ -88,15 +91,76 @@
 				$next.trigger('click');
 			})
 
+			arDvX = ['xs','sm','md','lg'];
+
 			$('.grix_device').click(function(e){
 				e.preventDefault();
 				$(this).addClass('active').siblings('.grix_device').removeClass('active');
 				device = $(this).data('device');
-				$('body').removeClass('grix_sm grix_md grix_lg').addClass('grix_'+device);
+
+				$('body').removeClass('grix_xs grix_sm grix_md grix_lg');
+				for (var i = 0; i < arDvX.length; i++) {
+					if (arDvX[i] != device) {
+						$('body').addClass('grix_'+arDvX[i]);
+					} else {
+						break;
+					};
+					
+				};
+				$('body').addClass('grix_'+device);
+				// $('body').removeClass('grix_sm grix_md grix_lg').addClass('grix_'+device);
 				drawGrix();
 				addUi();
 			})
-		
+
+
+			$('.grix_bt').click(function(e){
+				e.preventDefault();
+				var order = $(this).data('bt');
+				var dir = $(this).data('dir');
+				console.log(order);
+				if (arColAct.length) {
+					// a column is active, change unit values
+			    	$('.c.active').each(function(index, el) {
+			    		
+				    	var obRow = getObjectsById($(this));
+				    	var arCols = obRow.elements;
+				    	var obCol = obRow.elements[obRow.pos];
+				    	var nrU = obCol[order][device];
+				    	if (nrU=="x") {
+				    		if (order=="width") {
+					    		nrU = 12;
+				    			
+				    		} else {
+					    		nrU = 0;
+
+				    		};
+
+				    	};
+				    	nrU = parseInt(nrU);
+				    	console.log(nrU);
+				    	if (dir=='minus') {
+						    if (nrU>0) {
+						    	nrU--;
+						    };
+				    		
+				    	} else{
+				    		if (nrU<12) {
+				    			nrU++;
+				    		};
+				    	};
+				    	$('.info_'+order).text(nrU);
+					    // dir == 'minus' ? nrU-- : nrU++;
+					    obCol[order][device] = String(nrU);
+			    	});
+			    	// redraw the grid every time the cols push units are changed
+					drawGrix();
+					addUi();
+				}
+
+				drawGrix();
+				addUi();
+			})	
 			drawGrix();
 			addUi();
 		}
@@ -111,18 +175,18 @@
 			// console.log('arId: ',arId);
 			// console.log('arId.length: ',arId.length);
 
-			var obPartent = {
+			var obParent = {
 				elements: obData,
 				pos: parseInt(arId[0])
 			};
 			// console.log(arId[3]);
 			for (var i=0; i < arId.length-1; i++) {
-				obPartent = obPartent.elements[arId[i]];
-				obPartent.pos = parseInt(arId[i+1]);
+				obParent = obParent.elements[arId[i]];
+				obParent.pos = parseInt(arId[i+1]);
 			};
 				
-			// console.log('obPartent: ',obPartent);
-			return obPartent;
+			// console.log('obParent: ',obParent);
+			return obParent;
 		}
 		
 
@@ -136,11 +200,11 @@
 			var arSibls = obP.elements[obP.pos].elements;
 
 			// Get the unit value of the first column sibling
-			var nrSiblsUnits = arSibls[0].boot[device];
+			var nrSiblsUnits = arSibls[0].width[device];
 
 			// Add the new column
 			var obCol = new GrixCol();
-			obCol.boot[device] = nrSiblsUnits;
+			obCol.width[device] = nrSiblsUnits;
 			arSibls.push(obCol);
 			
 			drawGrix();
@@ -218,7 +282,7 @@
 					// change existing col
 					// arCols[i].units = arUnits[i];
 					// console.log(arUnits[cc]);
-					arCols[i].boot[device] = arUnits[cc];
+					arCols[i].width[device] = arUnits[cc];
 					if (cc==arUnits.length-1 ){
 						cc = 0;
 					} else {
@@ -261,12 +325,12 @@
 				if(arElements[i] != undefined){
 					// change existing col
 					// arElements[i].units = arUnits[i];
-					arElements[i].boot[device] = arUnits[i];
+					arElements[i].width[device] = arUnits[i];
 				} else {
 					// create new column
 					var obNewCol = new GrixCol();
-					obNewCol.boot[device] = parseInt(arUnits[i]);
-					console.log(obNewCol.boot);
+					obNewCol.width[device] = parseInt(arUnits[i]);
+					console.log(obNewCol.width);
 					arElements.push(obNewCol)
 				}
 			}
@@ -318,12 +382,12 @@
 			// how many units exist before deleting
 			var nrUnitsExist = 0;
 			for (var i = 0; i < arCols.length; i++) {
-				nrUnitsExist += parseInt(arCols[i].boot[device]);
+				nrUnitsExist += parseInt(arCols[i].width[device]);
 			}
 			// console.log('nrUnitsExist: ',nrUnitsExist);
 
 			// how many units will be subtracted
-			var nrUnitsToSubtr = obCol.boot[device];
+			var nrUnitsToSubtr = obCol.width[device];
 			// console.log('nrUnitsToSubtr: ',nrUnitsToSubtr);
 
 			// delete the col from the array
@@ -348,13 +412,13 @@
 					var obCol = arCols[i];
 					// var nrUnitsNew = parseInt(obCol.units);// + nrUnitsEachAdd;
 					// obCol.units = nrUnitsNew;
-					arUnitsConf.push(obCol.boot[device]);
+					arUnitsConf.push(obCol.width[device]);
 				}
 
 				obP.unitsConf[device] = arUnitsConf.join('-');
 				// console.log('stUnitsConf:',stUnitsConf);
 			} else {
-				obP.unitsConf[device] = arCols[0].boot[device];
+				obP.unitsConf[device] = arCols[0].width[device];
 
 			}
 
@@ -401,14 +465,17 @@
 		function deleteElement(el){
 			// delete the element permanently
 			var obP = getObjectsById(el);
+			console.log('dle');
 			$.ajax({
 				method: 'get',
 				url: 'system/modules/gp_grix/ajax/ajax_delete.php',
 				data: {
-					id: obP.elements[obP.pos].id
+					id: obP.elements[obP.pos].id,
+					articleId: obGrixCfg.articleId,
 				},
 				success: function(data){
 					// console.log("deleted!");
+					console.log(data);
 					obP.elements.splice(obP.pos,1);
 					drawGrix();
 					addUi();
@@ -426,7 +493,7 @@
 			console.log('obElement: ',obElement);
 
 			// Adjust css classes choosen in the lightbox
-			obElement.classes = obCfg.classes;
+			obElement.classes = obCfg.arClasses;
 
 
 			// Adjust rows
@@ -456,15 +523,15 @@
 
 					for (var i = 0; i < arCols.length; i++) {
 						var obCol = arCols[i];
-						// obCol.boot[property] = obCfg.unitsConf[property];
+						// obCol.width[property] = obCfg.unitsConf[property];
 						if (arNewUnitsConf[i]==undefined) {
-							obCol.boot[property] = arNewUnitsConf[0];
+							obCol.width[property] = arNewUnitsConf[0];
 							
 						} else {
-							obCol.boot[property] = arNewUnitsConf[i];
+							obCol.width[property] = arNewUnitsConf[i];
 
 						}
-						// console.log(obCol.boot);
+						// console.log(obCol.width);
 					};
 
 				}
@@ -528,31 +595,44 @@
 
 		function addUi(){
 
-			if (arColAct.length) {
-				for (var i = 0; i < arColAct.length; i++) {
-					$(".grix").find("[data-id='" + arColAct[i] + "']").addClass('active')
-				}
+
+			for (var i = 0; i < arColAct.length; i++) {
+				$(".grix").find("[data-id='" + arColAct[i] + "']").addClass('active')
 			}
 
 			$(".c").click(function(event) {
 
 				if ($(this).hasClass('active')) {
-					$(this).removeClass('active');
 					arColAct.splice($.inArray($(this).data('id'), arColAct),1);
 				} else {
-					stActCol = $(this).data('id');
-					$actCol = $(this);
-					boColAct = true;
-					console.log('boColAct: ',boColAct);
 					if (event.shiftKey) {
 						arColAct.push($(this).data('id'));
-
 					} else {
 						arColAct = [$(this).data('id')];
-						$('.c').removeClass('active');
 					}
-					$(this).addClass('active');
+
+					var obRow = getObjectsById($(this));
+					var arCols = obRow.elements;
+					var obCol = obRow.elements[obRow.pos];
+
+
+					for (var i = 0; i < arBootProps.length; i++) {
+						var prop = arBootProps[i]
+						var nrU = obCol[prop][device];
+						$('.info_'+prop).text(nrU);
+					};
+					// console.log(nrU);
+
 				}
+				boColIsAct = arColAct.length ? true : false;
+				$('.c').removeClass('active');
+				for (var i = 0; i < arColAct.length; i++) {
+					$(".grix").find("[data-id='" + arColAct[i] + "']").addClass('active')
+				}
+				if (arColAct.length==0) {
+					$(".info").text('');
+				};
+				// console.log('boColIsAct: ',boColIsAct);
 				// console.log('arColAct: ',arColAct);
 				event.stopPropagation();
 			});
@@ -578,7 +658,7 @@
 		            if(typeof $targetGrixColMenu === 'undefined'){
 						$targetGrixColMenu = $(this).siblings('.c_menu');
 		            };
-		            // Get the dragged dom element
+		            // get the dragged dom element
 		            var $elCE = $(ui.item);
 
 					// get the origin col
@@ -610,10 +690,10 @@
 
 					if (boIsSameCol) {
 						if (obOCol.pos > nrTIndex) {
-							// The element was been dragged upwards
+							// the element was been dragged upwards
 							nrIDel +=1;
 						} else{
-							// The element was been dragged downwards
+							// the element was been dragged downwards
 							nrTIndex++;
 						};
 					} 
@@ -629,7 +709,7 @@
 		        }
 		    });
 
-		    $(".c_content").disableSelection();
+		    $('.c_content').disableSelection();
 
 			// row menu
 
@@ -698,7 +778,6 @@
 
 			$('.del_ele').click(function(e){
 				if (e.altKey) {
-					// console.log("alt");
 					deleteElement($(this).parent());
 				} else{
 					removeElement($(this).parent());
@@ -712,7 +791,6 @@
 		
 			
 		function createBeHtmlCode(arEls,level,id){
-			// console.log(id);
 			level++;
 			var html = "";
 			var nrElsY = arEls.length;
@@ -725,8 +803,8 @@
 				// lets build a row
 				if(obEl.type == "row"){
 					
-					html += "<div class='r cf"+stClassSingle+"' >\
-								<div class='r_content row cf'>";
+					html += "<div class='r"+stClassSingle+"' >\
+								<div class='r_content'>";
 
 					if(obEl.elements){
 						// lets build some cols
@@ -737,15 +815,33 @@
 						for(var x=0; x < nrEls; x++){
 							var obCol = arCols[x];
 							var stNewId = (id=='' ? y+"_"+x : id+"_"+y+"_"+x);
-							// var stClass = "c c"+obCol.units+" l"+level+stClassSingle;
-							// var stClassBt = "";
+							var stClass = "c l"+level+stClassSingle;
 
-							// for (var stCl in obCol.boot) {
-							//     stClassBt += (' '+obCol.boot[stCl]);
-							// }
-							var stUnClass = "col-"+device+"-"+obCol.boot[device];
 
-							var stClass = "c "+ stUnClass + " l"+level+stClassSingle;
+							for (var dev in obCol.width) {
+								var stU = obCol.width[dev];
+								if (stU !== "x") {
+									stClass += " col-"+dev+"-"+stU;
+								}
+							}
+							for (var dev in obCol.offset) {
+								var stU = obCol.offset[dev];
+								if (stU !== "x") {
+									stClass += " col-"+dev+"-offset-"+stU;
+								}
+							}
+							for (var dev in obCol.push) {
+								var stU = obCol.push[dev];
+								if (stU !== "x") {
+									stClass += " col-"+dev+"-push-"+stU;
+								}
+							}
+							for (var dev in obCol.pull) {
+								var stU = obCol.pull[dev];
+								if (stU !== "x") {
+									stClass += " col-"+dev+"-pull-"+stU;
+								}
+							}
 
 							html += "<div class='"+stClass+"' data-id='"+stNewId+"' >\
 											<div class='c_content'>";
@@ -798,7 +894,6 @@
 
 				// lets build a content-element
 				if(obEl.type == "ce"){
-					// console.log('obEl: ',obEl);
 					var stNewId = (id=='' ? y : id+"_"+y);
 					var stCeHtml = $('#grixce_'+obEl.id).html();
 
@@ -826,30 +921,60 @@
 
 			for(var y=0; y < arEls.length; y++){
 				var obEl = arEls[y];
-				// console.log(obEl);
 				var stClassCust = obEl.classes ? " " + obEl.classes.join(' ') : "";
 
 				// lets build a row
 				if(obEl.type == "row"){
-					
 					html += "<div class='row cfix"+stClassCust+"' >";
+
+					// lets build cols
 					if(obEl.elements){
-						// lets build cols
 					
 						var arCols = obEl.elements;
 						
 						for(var x=0; x < arCols.length; x++){
 							var obCol = arCols[x];
-							var stNewId = (id=='' ? y+"_"+x : id+"_"+y+"_"+x);
-							// var stClass = "col-"+device+"-"+obCol.units+" l"+level;
+							var stNewId = (id=="" ? y+"_"+x : id+"_"+y+"_"+x);
 							var stClass = "l"+level;
 
-							for (var dev in obCol.boot) {
-								if (obCol.boot[dev] !== "12") {
-									stClass += " col-"+dev+"-"+obCol.boot[dev];
+							for (var i = 0; i < arBootProps.length; i++) {
+								var prop = arBootProps[i]
+								for (var dev in obCol[prop]) {
+									var stU = obCol[prop][dev];
+									if (stU !== "x") {
+										if (prop=="width") {
+											stClass += " col-"+dev+"-"+stU;
+										} else{
+											stClass += " col-"+dev+"-"+prop+"-"+stU;
+										};
+									}
+								}					
+							};
 
-								}
-							}
+							// for (var dev in obCol.width) {
+							// 	var stU = obCol.width[dev];
+							// 	if (stU !== "x") {
+							// 		stClass += " col-"+dev+"-"+stU;
+							// 	}
+							// }
+							// for (var dev in obCol.offset) {
+							// 	var stU = obCol.offset[dev];
+							// 	if (stU !== "x") {
+							// 		stClass += " col-"+dev+"-offset-"+stU;
+							// 	}
+							// }
+							// for (var dev in obCol.push) {
+							// 	var stU = obCol.push[dev];
+							// 	if (stU !== "x") {
+							// 		stClass += " col-"+dev+"-push-"+stU;
+							// 	}
+							// }
+							// for (var dev in obCol.pull) {
+							// 	var stU = obCol.pull[dev];
+							// 	if (stU !== "x") {
+							// 		stClass += " col-"+dev+"-pull-"+stU;
+							// 	}
+							// }
 
 							stClass = obCol.classes ? stClass + " " + obCol.classes.join(' ') : stClass;
 
@@ -884,8 +1009,8 @@
 			var stHtmlFe = createFeHtmlCode(obData,level,'');
 			var stJson = JSON.stringify(obData);
 
-			// show the backend user interface
-			$('.grix').html(stHtmlBe);
+			// show the grid in the backend
+			$('.grix_grid').html(stHtmlBe);
 
 			// fill the backend form inputs
 			$('#ctrl_grixHtmlFrontend').val(stHtmlFe);
@@ -896,7 +1021,6 @@
 			$('.grix_beautyfied').html(stJsonBeautyfied);
 
 			// saveGrix(stJson,stHtmlFe);
-			
 		}
 
 
@@ -918,9 +1042,9 @@
 	        }).done(function(msg) {
 				$('.grixJs').removeClass('loading');
 				$('.grixJs').addClass('saved');
-				// console.log(msg);
+				console.log(msg);
 			});	
-       }
+		}
 
 
 		function syntaxHighlight(json) {

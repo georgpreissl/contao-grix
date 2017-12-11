@@ -6,7 +6,7 @@ $GLOBALS['TL_DCA']['tl_article']['fields']['grixJs'] = array
 	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['grixJs'],
 	'exclude'                 => true,
 	'inputType'               => 'textarea',
-	'default'				  => '[{"type":"row","unitsConf":{"xs":12,"sm":12,"md":12,"lg":12},"classes":"","elements":[{"type":"col","units":"12","boot":{"xs":12,"sm":12,"md":12,"lg":12},"classes":"","elements":[]}]}]',
+	// 'default'				  => '[{"type":"row","unitsConf":{"xs":12,"sm":12,"md":12,"lg":12},"classes":"","elements":[{"type":"col","units":"12","boot":{"xs":12,"sm":12,"md":12,"lg":12},"classes":"","elements":[]}]}]',
 	'eval'					  => array
 	(
 		'preserveTags' => true, 

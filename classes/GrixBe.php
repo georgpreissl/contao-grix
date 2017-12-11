@@ -65,7 +65,7 @@ class GrixBe extends \BackendModule
 		$id = \Input::get('id');
 
 
-		// if grix is activated in the backend-module-pannel
+		// if grix is activated/clicked in the backend-module-pannel
 		// under construticon!!!
 		if(!$id)
 		{
@@ -117,68 +117,63 @@ class GrixBe extends \BackendModule
 		}
 
 
-		// get all the CEs of this article
+
+
+
+		// get all the CEs of this article created by Grix
+		$objCEsUsed = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($id);
+		$arrCEsUsed = unserialize($objCEsUsed->CEsUsed);
+		if ($arrCEsUsed==false) {
+			$arrCEsUsed = array();
+		}
+		$intCEsUsedNr = count($arrCEsUsed);
+
+
+		// get all the CEs of this article created by contao directly
 		$objCEs = \ContentModel::findPublishedByPidAndTable($id,'tl_article');
+        $arrCEs = array();
 	    if ($objCEs !== null) {
-	        $intNrCEs = $objCEs->count();
-	        // var_dump($intNrCEs);
-	        $intLast = $objCEs->count() - 1;
-	        $arrCeStart = array();
+	        $intCEsNr = $objCEs->count();
 
 	        while ($objCEs->next()) {
-	            $arrCss = array();
-	            /** @var \ContentModel $objCE */
 	            $objCE = $objCEs->current();
-	            $arrCeStart[] = $objCE->id;
-	            // var_dump($objCE->id);
-	            // printf('<pre>%s</pre>', print_r($objCE,true));
-
+	            $arrCEs[] = $objCE->id;
 	        }
 	    }
-		// var_dump($arrCeStart);
-		// printf('<pre>%s</pre>', print_r($arrCeStart,true));
-		// printf('<pre>%s</pre>', print_r($objCEs,true));
 
-		// get all the CEs used by Grix (also includes imported ones)
-		$objUsedCEs = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($id);
-		$arrUsedCEs = unserialize($objUsedCEs->CEsUsed);
-		// var_dump($arrUsedCEs);
-		if ($arrUsedCEs==false) {
-			$arrUsedCEs = array();
-		}
 
-$arrFinal = array_merge($arrCeStart,$arrUsedCEs);
+	    // add the contao-created CEs to the collection
+		$arrOverall = array_merge($arrCEsUsed, $arrCEs);
 		
-$arrFinal = array_unique($arrFinal);
-// printf('<pre>%s</pre>', print_r($arrFinal,true));
+		// delete duplicates
+		$arrOverall = array_unique($arrOverall);
 
-		$objCEs = \ContentModel::findMultipleByIds($arrFinal);
+		// now we have all the CEs for this article
+		$objCEsOverall = \ContentModel::findMultipleByIds($arrOverall);
 
-		// store the CEs in an array
-		$arrCEs = array();
-		if ($objCEs !== null)
+		// store all the CEs in an array
+		$arrCEsOverall = array();
+		if ($objCEsOverall !== null)
 		{
-		 	while ($objCEs->next())
+		 	while ($objCEsOverall->next())
 			{
 				$arrCE = array();
-				$arrCE['html'] = \Controller::getContentElement($objCEs->current(),'main');
-				$arrCE['id'] = $objCEs->id;
-				$arrCEs[] = $arrCE;
+				$arrCE['html'] = \Controller::getContentElement($objCEsOverall->current(),'main');
+				$arrCE['id'] = $objCEsOverall->id;
+				$arrCEsOverall[] = $arrCE;
 			}
 		}
 
-		// printf('<pre>%s</pre>', print_r($arrCEs,true));
 
-		// get all the Classes of this article
+		// get all the css-classes of this article
 		$objClasses = \GrixCssModel::findAll();
 
-		// store the CEs in an array
+		// store the css-classes in an array
 		$arrClasses = array();
 		if ($objClasses !== null)
 		{
 		 	while ($objClasses->next())
 			{
-				// printf('<pre>%s</pre>', print_r($objClasses->current(),true));
 				$arrCl = array();
 				$arrCl['name'] = $objClasses->styleDesignation;
 				$arrCl['id'] = $objClasses->id;
@@ -186,17 +181,15 @@ $arrFinal = array_unique($arrFinal);
 				$arrClasses[] = $arrCl;
 			}
 		}
-// printf('<pre>%s</pre>', print_r($arrClasses,true));
 
 
 		// get the grixJs of this article
 		$result = $this->Database->prepare("SELECT grixJs FROM tl_article WHERE id=?")->execute($id);
-		$strData = $result->grixJs;
-
-		if ($strData == NULL) {
-			$strData = '[{"type":"row","unitsConf":{"xs":12,"sm":12,"md":12,"lg":12},"classes":"","elements":[{"type":"col","units":"12","boot":{"xs":12,"sm":12,"md":12,"lg":12},"classes":"","elements":[]}]}]';
-		}
-
+		$strData = $result->grixJs ? : '';
+		// if ($strData==NULL) {
+		// 	$strData = '';
+		// }
+// var_dump($strData);
 		$this->loadLanguageFile('tl_grix');  
 
 
@@ -205,13 +198,11 @@ $arrFinal = array_unique($arrFinal);
 		$this->Template->id = $id;
 		$this->Template->data = $strData;
 		$this->Template->grixHtmlFrontend = $grixHtmlFrontend;
-		$this->Template->ces = $arrCEs;
+		$this->Template->ces = $arrCEsOverall;
 		$this->Template->action = ampersand(\Environment::get('request'));
 		$this->Template->href = $this->getReferer(true);
 		$this->Template->title = specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']);
-		// var_dump(TL_ROOT);
 		$this->Template->lc = file_get_contents(TL_ROOT . '/system/modules/gp_grix/assets/img/lb-icons/lb-close.svg');
-		// $this->Template->lc = "fuck";
 
 		// not working, why?	
         $this->Template->headline = sprintf($GLOBALS['TL_LANG']['tl_grix']['headline'], \Input::get('id'));
@@ -225,8 +216,10 @@ $arrFinal = array_unique($arrFinal);
 		$this->Template->classes = $arrClasses;
 
 		// for debugging
-		$this->Template->nrCEs = $intNrCEs;
-		$this->Template->usedCEs = implode(", ", $arrUsedCEs);
+		$this->Template->CEsNr = $intCEsNr;
+		$this->Template->CEs = implode(", ", $arrCEs);
+		$this->Template->CEsUsedNr = $intCEsUsedNr;
+		$this->Template->CEsUsed = implode(", ", $arrCEsUsed);
 
 		
 	}
@@ -243,7 +236,7 @@ $arrFinal = array_unique($arrFinal);
 		$arrPids = array();
 		$arrAlias = array();
 
-    $this->import('BackendUser', 'User');
+	    $this->import('BackendUser', 'User');
 
 		if (!$this->User->isAdmin)
 		{

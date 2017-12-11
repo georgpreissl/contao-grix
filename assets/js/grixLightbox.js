@@ -12,21 +12,13 @@
 
 			self.bindEvents = function(){
 
-				// Choose the units config
+				// choose the units config for a row by click
 				$(".grix_lb_unitsconf").click(function(e) {
-
 					$(this).addClass('selected').siblings().removeClass('selected');
-
-
-					
 					e.preventDefault();
 				});
 
-
-				$(".grix_lb_unitsconf_custom").focus(function(e) {
-					
-				});
-
+				// choose the units config for a row by text input
 				$(".grix_lb_unitsconf_custom").change(function(e) {
 					console.log('change');
 					var val = $(this).val();
@@ -37,7 +29,7 @@
 
 
 
-				// Load the CE's of the selected article
+				// import CE's from other articles via dropdown menu
 				$(".grix_lb_articles select").change(function(){
 				    var nrArtId = $(this).val();
 
@@ -54,10 +46,12 @@
 			        }).done(function(obj) {
 			        	// Insert the loaded CE's
 						$('.grix_lb_ces').html(obj.content);
+						console.log('done');
 					});	
 			        return false;
 				});
 
+				// select an CE to import it
 				$('.grix_lb').on("click", '.grix_lb_ce', function(event) { 
 					$(this).toggleClass('selected');
 				});
@@ -72,6 +66,7 @@
 					e.preventDefault();
 				});
 
+				// select an css class to apply it
 				$('.grix_lb_class').click(function(e) {
 					$(this).toggleClass('selected');
 				});
@@ -79,7 +74,7 @@
 				$('#grix_lb_apply').click(function(e){
 					console.log('apply');
 
-					// collect the selected unit-configs
+					// collect the selected unit-configs for a row
 					$(".grix_lb_uc.selected").each(function(i,el){
 						self.obCfg.unitsConf[$(el).data('device')] = $(el).data('config');
 					});
@@ -95,11 +90,11 @@
 					});
 
 					// create the return object
-					self.obCfg.classes = self.arCLchecked;
+					self.obCfg.arClasses = self.arCLchecked;
 					self.obCfg.arCEs = self.arCEchecked;
 
 					// call the callback function
-					self.apply();
+					apply();
 				});
 
 			}
@@ -121,17 +116,19 @@
 
 
 
-				// Get the clicked row/column
+				// get the clicked row/column
 				var obClicked = self.settings.obTarget.elements[self.settings.obTarget.pos];
-				// console.log('obClicked: ',obClicked);
 
 				// Open the lightbox
 				$('body').addClass('grix_lb_active grix_lb_'+obClicked.type);
 
-				// Get the css classes of it
+				// Get the existing css classes of the row/column
 				self.arClasses = obClicked.classes;
-				// console.log('self.arClasses: ',self.arClasses);
 
+				// mark those existing css classes as selected
+				for (var i = 0; i < self.arClasses.length; i++) {
+					$('.grix_lb_classes').find('[data-alias="'+self.arClasses[i]+'"]').addClass('selected');
+				}
 
 				if (obClicked.type == 'row') {
 
@@ -155,10 +152,6 @@
 				};
 
 
-				// Mark the choosen css classes as selected
-				for (var i = 0; i < self.arClasses.length; i++) {
-					$('.grix_lb_classes').find('[data-alias="'+self.arClasses[i]+'"]').addClass('selected');
-				}
 
 
 			}
@@ -166,7 +159,7 @@
 
 			// Close the lightbox window and apply
 
-			self.apply = function(){
+			function apply() {
 				self.settings.callBackFunction(self.settings.obTarget,self.obCfg);
 				self.close();
 			}

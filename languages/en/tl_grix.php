@@ -5,9 +5,8 @@
 $GLOBALS['TL_LANG']['tl_grix']['reset'] = array('Zurücksetzen','');
 $GLOBALS['TL_LANG']['tl_grix']['headline'] = 'Erweiterung ID %s erstellen';
 
-$GLOBALS['TL_LANG']['tl_grix']['preview'] = 'Vorschau umschalten';
+$GLOBALS['TL_LANG']['tl_grix']['preview'] = 'Toggle Preview';
 
-$GLOBALS['TL_LANG']['tl_grix']['deviceChange'] = 'Ansicht wechseln';
 $GLOBALS['TL_LANG']['tl_grix']['deviceXs'] = 'Base';
 $GLOBALS['TL_LANG']['tl_grix']['deviceSm'] = 'Mobile';
 $GLOBALS['TL_LANG']['tl_grix']['deviceMd'] = 'Tablet';
