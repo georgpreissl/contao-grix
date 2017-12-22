@@ -5,13 +5,14 @@
 		// the new CE should be saved
 		// Let's paste it into the grix JSON before
 		$('#saveNclose').click(function(e) {
-		    e.preventDefault();
 
 			var phId = getUrlParameter('phid');
 			var articleId = getUrlParameter('pid');
 			var ceId = getUrlParameter('id');
 			
 			loadGrixJs(articleId,phId,ceId);
+			
+		    e.preventDefault();
 			return false;
 		});
 
@@ -76,7 +77,7 @@
 					ceId: ceId
 				},
 				success: function(msg){
-					console.log(msg);
+					// console.log(msg);
 
 					// dont execute 'loadGrixJs' again
 					$('#saveNclose').off('click');

@@ -22,7 +22,7 @@ function GrixCol() {
 
 
 	this.type = 'col';
-	// this.units = '12';
+	
 	this.width = {
 		xs:"x",
 		sm:"x",

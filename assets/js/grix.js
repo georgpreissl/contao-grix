@@ -4,19 +4,44 @@
 
 
 
-	window.Grix = function(obGrixCfg){
-
-		var obData = obGrixCfg.data;
+	window.Grix = function(obCfg){
+		var obData = obCfg.data;
 		var level = 0;
 		var device = 'lg';
 		var boColIsAct = false;
 		var arColAct = [];
 		var arResKeys = [37,39,27,32];
 		var arBootProps = ['width','offset','push','pull'];
+		var arDevices = ['xs','sm','md','lg'];
 
 		this.init = function(){
 
-			$('body').addClass('grix_lg');
+			initUi();
+			drawGrix();
+		}
+
+
+		function initUi(){
+
+			$('.header_back').click(function(e) {
+				console.log(Contao.request_token);
+				$.ajax({
+					type: 'POST',
+					data: {
+						'action':'jobo',
+						'a': 'arBootProps',
+						'REQUEST_TOKEN':Contao.request_token
+					},
+					dataType: 'json',
+					cache: false		     	
+
+		        }).done(function(obj) {
+		        	console.log('this');
+					console.log(obj);
+				});	
+		        return false;				
+				e.preventDefault();
+			});
 
 			$(document).keydown(function(e){
 				var key = e.keyCode;
@@ -34,15 +59,12 @@
 					    	$('.c.active').each(function(index, el) {
 					    		
 						    	var obRow = getObjectsById($(this));
-						    	var arCols = obRow.elements;
 						    	var obCol = obRow.elements[obRow.pos];
 						    	var nrU = obCol.width[device];
 							    key == 39 ? nrU++ : nrU--;
 							    obCol.width[device] = String(nrU);
 					    	});
-					    	// redraw the grid every time the col units are changed
-							drawGrix();
-							addUi();
+
 						} else {
 						    // no column active, change device
 						    if (key == 39) {
@@ -71,64 +93,55 @@
 				    }
 			    	e.preventDefault();
 				}
+
+			});
+
+
+			$('.grix_device').click(function(e){
+				$(this).addClass('active').siblings('.grix_device').removeClass('active');
+				device = $(this).data('device');
+
+				$('body').removeClass('grix_xs grix_sm grix_md grix_lg');
+				for (var i = 0; i < arDevices.length; i++) {
+					$('body').addClass('grix_'+arDevices[i]);
+					if (arDevices[i] == device) {
+						break;
+					};
 					
+				};
 
-			});
-
-
-			$('.grix_toggle_preview').click(function(e) {
 				e.preventDefault();
-				$('body').toggleClass('grix_preview');
-			});
+			})
+
 
 			$('.grix_device_switch').click(function(e){
-				e.preventDefault();
 				if ($(this).data('direction')=='next') {
 					$next = $('.grix_device.active').next('.grix_device').length == 0 ? $('.grix_device').first() : $('.grix_device.active').next();
 				} else{
 					$next = $('.grix_device.active').prev('.grix_device').length == 0 ? $('.grix_device').last() : $('.grix_device.active').prev();
 				};
 				$next.trigger('click');
-			})
-
-			arDvX = ['xs','sm','md','lg'];
-
-			$('.grix_device').click(function(e){
 				e.preventDefault();
-				$(this).addClass('active').siblings('.grix_device').removeClass('active');
-				device = $(this).data('device');
-
-				$('body').removeClass('grix_xs grix_sm grix_md grix_lg');
-				for (var i = 0; i < arDvX.length; i++) {
-					if (arDvX[i] != device) {
-						$('body').addClass('grix_'+arDvX[i]);
-					} else {
-						break;
-					};
-					
-				};
-				$('body').addClass('grix_'+device);
-				// $('body').removeClass('grix_sm grix_md grix_lg').addClass('grix_'+device);
-				drawGrix();
-				addUi();
 			})
 
+			$('.grix_toggle_preview').click(function(e) {
+				$('body').toggleClass('grix_preview');
+				e.preventDefault();
+			});
 
 			$('.grix_bt').click(function(e){
-				e.preventDefault();
-				var order = $(this).data('bt');
+				var prop = $(this).data('bt');
 				var dir = $(this).data('dir');
-				console.log(order);
+				// console.log(prop);
 				if (arColAct.length) {
 					// a column is active, change unit values
 			    	$('.c.active').each(function(index, el) {
 			    		
 				    	var obRow = getObjectsById($(this));
-				    	var arCols = obRow.elements;
 				    	var obCol = obRow.elements[obRow.pos];
-				    	var nrU = obCol[order][device];
+				    	var nrU = obCol[prop][device];
 				    	if (nrU=="x") {
-				    		if (order=="width") {
+				    		if (prop=="width") {
 					    		nrU = 12;
 				    			
 				    		} else {
@@ -138,33 +151,27 @@
 
 				    	};
 				    	nrU = parseInt(nrU);
-				    	console.log(nrU);
+				    	// console.log(nrU);
 				    	if (dir=='minus') {
 						    if (nrU>0) {
 						    	nrU--;
 						    };
-				    		
 				    	} else{
 				    		if (nrU<12) {
 				    			nrU++;
 				    		};
 				    	};
-				    	$('.info_'+order).text(nrU);
-					    // dir == 'minus' ? nrU-- : nrU++;
-					    obCol[order][device] = String(nrU);
+				    	$('.info_'+prop).text(nrU);
+					    obCol[prop][device] = String(nrU);
+					    // eg: obCol.width.lg = 6
 			    	});
-			    	// redraw the grid every time the cols push units are changed
+			    	// redraw the grid every time the cols units are changed
 					drawGrix();
-					addUi();
 				}
+				e.preventDefault();
+			})
 
-				drawGrix();
-				addUi();
-			})	
-			drawGrix();
-			addUi();
 		}
-
 
 
 		function getObjectsById(el){
@@ -208,7 +215,6 @@
 			arSibls.push(obCol);
 			
 			drawGrix();
-			addUi();
 		}
 
 		function addRow(el){
@@ -227,7 +233,6 @@
 				obP.elements[obP.pos].elements.push(obRow);
 			};
 			drawGrix();
-			addUi();
 		}
 
 		function reorderRow(el){
@@ -250,14 +255,12 @@
 			arRows[nrPos] = arRows[nrSwapIx];
 			arRows[nrSwapIx] = obRow;
 			drawGrix();
-			addUi();
 		}	
 		
 		function deleteRow(el){
 			var obP = getObjectsById(el);
 			obP.elements.splice(obP.pos,1);
 			drawGrix();
-			addUi();
 		}
 
 		function splitCol(el,stUnits){
@@ -290,7 +293,6 @@
 					}
 			}
 			drawGrix();
-			addUi();
 		}
 
 
@@ -335,7 +337,6 @@
 				}
 			}
 			drawGrix();
-			addUi();
 		}
 		
 
@@ -355,7 +356,7 @@
 				success: function(data){
 					// console.log(data);
 					// Status has been saved, now create the new CE
-					window.location.href = 'contao/main.php?do=article&table=tl_content&act=create&mode=2&pid='+obGrixCfg.articleId+'&id='+obGrixCfg.articleId+'&grix=create&rt='+obGrixCfg.requTok+'&phid='+stPhId;
+					window.location.href = 'contao/main.php?do=article&table=tl_content&act=create&mode=2&pid='+obCfg.articleId+'&id='+obCfg.articleId+'&grix=create&rt='+obCfg.requTok+'&phid='+stPhId;
 				},
 				error: function (xhr, textStatus, errorThrown) {
 					alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
@@ -397,7 +398,7 @@
 			// console.log('nrColsRemain: ',nrColsRemain);
 
 			var nrUnitsRemain = nrUnitsExist - nrUnitsToSubtr;
-			console.log('nrUnitsRemain: ',nrUnitsRemain);
+			// console.log('nrUnitsRemain: ',nrUnitsRemain);
 
 			if (nrUnitsRemain <= 12) {
 
@@ -423,7 +424,6 @@
 			}
 
 			drawGrix();
-			addUi();
 		}
 
 
@@ -444,7 +444,7 @@
 				data: stData,
 				success: function(data){
 					// current status has been saved, now edit the CE
-					window.location.href= 'contao/main.php?do=article&table=tl_content&act=edit&id='+stId+'&grix=edit&pid='+obGrixCfg.articleId+'&rt='+obGrixCfg.requTok;
+					window.location.href= 'contao/main.php?do=article&table=tl_content&act=edit&id='+stId+'&grix=edit&pid='+obCfg.articleId+'&rt='+obCfg.requTok;
 				},
 				error: function (xhr, textStatus, errorThrown) {
 					alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
@@ -458,27 +458,25 @@
 			var obP = getObjectsById(el);
 			obP.elements.splice(obP.pos,1);
 			drawGrix();
-			addUi();
 
 		}
 
 		function deleteElement(el){
 			// delete the element permanently
 			var obP = getObjectsById(el);
-			console.log('dle');
+			// console.log('dle');
 			$.ajax({
 				method: 'get',
 				url: 'system/modules/gp_grix/ajax/ajax_delete.php',
 				data: {
 					id: obP.elements[obP.pos].id,
-					articleId: obGrixCfg.articleId,
+					articleId: obCfg.articleId,
 				},
 				success: function(data){
 					// console.log("deleted!");
-					console.log(data);
+					// console.log(data);
 					obP.elements.splice(obP.pos,1);
 					drawGrix();
-					addUi();
 				},
 				error: function (xhr, textStatus, errorThrown) {
 					alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
@@ -486,14 +484,14 @@
 			});
 		}
 
-		function adjustElement(obP, obCfg){
+		function adjustElement(obP, obCfgLb){
 			
 			// The element which should be adjusted
 			var obElement = obP.elements[obP.pos];
-			console.log('obElement: ',obElement);
+			// console.log('obElement: ',obElement);
 
 			// Adjust css classes choosen in the lightbox
-			obElement.classes = obCfg.arClasses;
+			obElement.classes = obCfgLb.arClasses;
 
 
 			// Adjust rows
@@ -503,10 +501,10 @@
 				var arCols = obElement.elements;
 				// console.log('arCols: ',arCols);
 
-				for (var property in obCfg.unitsConf) {
+				for (var property in obCfgLb.unitsConf) {
 
-					var stNewUnitsConf = obCfg.unitsConf[property];
-					console.log('stNewUnitsConf: ', stNewUnitsConf);
+					var stNewUnitsConf = obCfgLb.unitsConf[property];
+					// console.log('stNewUnitsConf: ', stNewUnitsConf);
 					stNewUnitsConf = stNewUnitsConf+'';
 
 					if (stNewUnitsConf.indexOf('-') > -1) {
@@ -523,7 +521,7 @@
 
 					for (var i = 0; i < arCols.length; i++) {
 						var obCol = arCols[i];
-						// obCol.width[property] = obCfg.unitsConf[property];
+						// obCol.width[property] = obCfgLb.unitsConf[property];
 						if (arNewUnitsConf[i]==undefined) {
 							obCol.width[property] = arNewUnitsConf[0];
 							
@@ -542,41 +540,40 @@
 
 			if (obElement.type == 'col') {
 
-				if (!obCfg.arCEs.length) {
+				if (!obCfgLb.arCEs.length) {
 					drawGrix();
-					addUi();
 				};
 
-				// console.log('obCfg.arCEs: ',obCfg.arCEs);
+				// console.log('obCfgLb.arCEs: ',obCfgLb.arCEs);
 
 				// if CEs have been selected in the lightbox
-				if (obCfg.arCEs.length) {
-					for (var i = 0; i < obCfg.arCEs.length; i++) {
+				if (obCfgLb.arCEs.length) {
+					for (var i = 0; i < obCfgLb.arCEs.length; i++) {
 						var obNewCE = {
 							type: "ce",
-							id: obCfg.arCEs[i]+""
+							id: obCfgLb.arCEs[i]+""
 						};
-						$('#grixce_'+obCfg.arCEs[i]).clone().appendTo('.grix_celist');
+						$('#grixce_'+obCfgLb.arCEs[i]).clone().appendTo('.grix_celist');
 						obElement.elements.push(obNewCE);
 					};
 					// console.log('obElement.elements: ',obElement.elements);
-					console.log('obGrixCfg.articleId: ',obGrixCfg.articleId);
+					// console.log('obCfgLb.articleId: ',obCfgLb.articleId);
 					// update the CEsUsed-field of the article
-					// console.log('obCfg.arCEs: ',obCfg.arCEs);
-					var jsonString = JSON.stringify(obCfg.arCEs);
+					// console.log('obCfgLb.arCEs: ',obCfgLb.arCEs);
+					var jsonString = JSON.stringify(obCfgLb.arCEs);
 					
 					$.ajax({
 						type: 'GET',
 						url: 'system/modules/gp_grix/ajax/ajax_insertce.php',
 						data: {
-							articleId: obGrixCfg.articleId,
+							articleId: obCfg.articleId,
 							arCEs: jsonString
 						},
+						// dataType: 'json',
 						success: function(msg){
 							console.log('insertce-message: ',msg);
 							//console.log('obCol:',obCol);
 							drawGrix();
-							addUi();
 
 							
 						},
@@ -704,7 +701,6 @@
 					obOCol.elements.splice(nrIDel, 1);
 						
 					drawGrix();
-					addUi();
 					
 		        }
 		    });
@@ -748,7 +744,7 @@
 			})
 
 			$('.adj_ele').click(function(e){
-				obGrixCfg.grixLightbox.activate({
+				obCfg.grixLightbox.activate({
 					'obTarget': getObjectsById($(this).parent()),
 					'callBackFunction': adjustElement
 				});
@@ -818,30 +814,20 @@
 							var stClass = "c l"+level+stClassSingle;
 
 
-							for (var dev in obCol.width) {
-								var stU = obCol.width[dev];
-								if (stU !== "x") {
-									stClass += " col-"+dev+"-"+stU;
-								}
-							}
-							for (var dev in obCol.offset) {
-								var stU = obCol.offset[dev];
-								if (stU !== "x") {
-									stClass += " col-"+dev+"-offset-"+stU;
-								}
-							}
-							for (var dev in obCol.push) {
-								var stU = obCol.push[dev];
-								if (stU !== "x") {
-									stClass += " col-"+dev+"-push-"+stU;
-								}
-							}
-							for (var dev in obCol.pull) {
-								var stU = obCol.pull[dev];
-								if (stU !== "x") {
-									stClass += " col-"+dev+"-pull-"+stU;
-								}
-							}
+							// add the bootstrap classes
+							for (var i = 0; i < arBootProps.length; i++) {
+								var prop = arBootProps[i]
+								for (var dev in obCol[prop]) {
+									var stU = obCol[prop][dev];
+									if (stU !== "x") {
+										if (prop=="width") {
+											stClass += " col-"+dev+"-"+stU;
+										} else{
+											stClass += " col-"+dev+"-"+prop+"-"+stU;
+										};
+									}
+								}					
+							};
 
 							html += "<div class='"+stClass+"' data-id='"+stNewId+"' >\
 											<div class='c_content'>";
@@ -937,6 +923,7 @@
 							var stNewId = (id=="" ? y+"_"+x : id+"_"+y+"_"+x);
 							var stClass = "l"+level;
 
+							// add the bootstrap classes
 							for (var i = 0; i < arBootProps.length; i++) {
 								var prop = arBootProps[i]
 								for (var dev in obCol[prop]) {
@@ -951,31 +938,7 @@
 								}					
 							};
 
-							// for (var dev in obCol.width) {
-							// 	var stU = obCol.width[dev];
-							// 	if (stU !== "x") {
-							// 		stClass += " col-"+dev+"-"+stU;
-							// 	}
-							// }
-							// for (var dev in obCol.offset) {
-							// 	var stU = obCol.offset[dev];
-							// 	if (stU !== "x") {
-							// 		stClass += " col-"+dev+"-offset-"+stU;
-							// 	}
-							// }
-							// for (var dev in obCol.push) {
-							// 	var stU = obCol.push[dev];
-							// 	if (stU !== "x") {
-							// 		stClass += " col-"+dev+"-push-"+stU;
-							// 	}
-							// }
-							// for (var dev in obCol.pull) {
-							// 	var stU = obCol.pull[dev];
-							// 	if (stU !== "x") {
-							// 		stClass += " col-"+dev+"-pull-"+stU;
-							// 	}
-							// }
-
+							// Add the classes selected by the user
 							stClass = obCol.classes ? stClass + " " + obCol.classes.join(' ') : stClass;
 
 							html += "<div class='"+stClass+"' id='el_"+stNewId+"' >";
@@ -993,7 +956,7 @@
 
 				// lets build a content-element
 				if(obEl.type == "ce"){
-					var stNewId = (id=='' ? y : id+"_"+y);
+					var stNewId = (id=="" ? y : id+"_"+y);
 					var stClass = "ce"+stClassCust;
 					html += "<div class='"+stClass+"' id='el_"+stNewId+"' >";
 					html += "{{insert_content::"+obEl.id+"}}";
@@ -1020,19 +983,20 @@
 			stJsonBeautyfied = syntaxHighlight(stJsonBeautyfied);
 			$('.grix_beautyfied').html(stJsonBeautyfied);
 
+			addUi();
 			// saveGrix(stJson,stHtmlFe);
 		}
 
 
 		function saveGrix(stJson,stHtmlFe){
-			// console.log(obGrixCfg.articleId);
+			// console.log(obCfg.articleId);
 			$('.grixJs').addClass('loading');
 			$.ajax({
 				type: 'POST',
 				// url: '',
 				data: {
 					'action': 'saveGrix',
-					'id': obGrixCfg.articleId,
+					'id': obCfg.articleId,
 					'grixJs': stJson,
 					'grixHtml': escape(stHtmlFe),
 					'REQUEST_TOKEN': Contao.request_token
@@ -1042,7 +1006,7 @@
 	        }).done(function(msg) {
 				$('.grixJs').removeClass('loading');
 				$('.grixJs').addClass('saved');
-				console.log(msg);
+				// console.log(msg);
 			});	
 		}
 

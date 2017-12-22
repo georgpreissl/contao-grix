@@ -78,7 +78,7 @@ class GrixHooks extends \Backend {
 	{
 	    if ($strTemplate == 'be_main' && \Input::get('do') == 'grixbe')
 	    {
-	        $strBuffer = str_replace('<body id="top" class="', '<body id="top" class="grix_active ', $strBuffer);
+	        $strBuffer = str_replace('<body id="top" class="', '<body id="top" class="grix_active grix_lg ', $strBuffer);
 	    }
 	    return $strBuffer;          
 	}
@@ -93,6 +93,26 @@ class GrixHooks extends \Backend {
 
     public function grixPostAction($strAction, $dc)
     {
+        	// $dc->table  ... is 'tl_article'!
+        	// $dc->id     ... is the id of the current edited article
+ 
+		if ($strAction == 'jobo') {
+			// echo 'asdf';
+			// echo \Environment::get('isAjaxRequest');
+
+			$objRows = $this->Database->prepare("UPDATE tl_article SET title = ? WHERE id=?")
+								  ->execute('asdfl',5);
+
+			echo json_encode(array 
+			( 
+			    'content'    => 'done!' ,
+			    'device'=> $objRows->id,
+			    'token'        => REQUEST_TOKEN 
+			));  
+            exit; 			
+		}
+
+
         if ($strAction == 'saveGrix')
         {
         	$id = \Input::post('id');
@@ -112,12 +132,10 @@ class GrixHooks extends \Backend {
             
         }        
  
-
         if ($strAction == 'loadGrixCEs')
         {
+
         	$id = \Input::post('id');
-
-
 
 			$objCte = \ContentModel::findPublishedByPidAndTable($id, 'tl_article');
 
@@ -134,14 +152,10 @@ class GrixHooks extends \Backend {
 					$html .= $strBuffer;
 					$html .= "</div>";
 					$html .= "</li>";
-					
-
 				}
 				$html .= "</ul>";
 			}
 
-         //  	$this->import('Database');
-// echo "jo";
 			echo json_encode(array 
 			( 
 			    'content'    => $html, 
@@ -149,19 +163,17 @@ class GrixHooks extends \Backend {
 			));  
             exit; 
         }  
-
-
     }
 
-  public function addBootstrapFramework($strName)
-  {
-    if ($strName == 'tl_layout')
-    {
-      // CSS Datei zu den Optionen hinzufügen
-      array_push($GLOBALS['TL_DCA']['tl_layout']['fields']['framework']['options'], '../../../system/modules/gp_grix/assets/css/bootstrap.css');
-      // array_push($GLOBALS['TL_DCA']['tl_layout']['fields']['framework']['options'], '../../../system/modules/gp_grix/assets/css/bootstrap-4/bootstrap-grid.css');
-    }
-  }
+
+	// Add a CSS file to the options
+	public function addBootstrapFramework($strName)
+	{
+	    if ($strName == 'tl_layout')
+	    {
+	      array_push($GLOBALS['TL_DCA']['tl_layout']['fields']['framework']['options'], '../../../system/modules/gp_grix/assets/css/bootstrap.css');
+	    }
+	}
 
 
 

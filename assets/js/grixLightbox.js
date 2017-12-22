@@ -33,9 +33,9 @@
 				$(".grix_lb_articles select").change(function(){
 				    var nrArtId = $(this).val();
 
+				    // php action is defined in GrixHooks.php
 					$.ajax({
 						type: 'POST',
-						// url: '',
 						data: {
 							'action':'loadGrixCEs',
 							'id':nrArtId,
@@ -46,7 +46,7 @@
 			        }).done(function(obj) {
 			        	// Insert the loaded CE's
 						$('.grix_lb_ces').html(obj.content);
-						console.log('done');
+						console.log(obj);
 					});	
 			        return false;
 				});

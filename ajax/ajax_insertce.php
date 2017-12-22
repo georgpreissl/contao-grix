@@ -34,11 +34,16 @@ foreach ($arrCEs as $key => $id) {
 	}
 	
 }
+// echo json_encode($arrUsedCEs);
+
+
+ 
+
 $data = serialize($arrUsedCEs);
-Database::getInstance()->prepare("UPDATE tl_article SET CEsUsed=? WHERE id=?")->execute($data, $articleId);
+$result = Database::getInstance()->prepare("UPDATE tl_article SET CEsUsed=? WHERE id=?")->execute($data, $articleId);
 	
 
-
+// echo $result->id;
 echo 'done!';
 
 

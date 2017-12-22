@@ -56,10 +56,10 @@
 		<div class="button_wrap button_width_wrap">
 			<div class="buttons">
 				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_width_minus'] ?>" class="grix_button grix_bt grix_bt_width" data-bt="width" data-dir="minus" >
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_minus.svg"); ?>
 				</a>
 				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_width_plus'] ?>" class="grix_button grix_bt grix_bt_width" data-bt="width" data-dir="plus" >
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</a>
 			</div>
 			<div class="buttons_label">width <span class="info info_width"></span></div>
@@ -68,10 +68,10 @@
 		<div class="button_wrap button_offset_wrap">
 			<div class="buttons">
 				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_offset_minus'] ?>" class="grix_button grix_bt grix_bt_offset" data-bt="offset" data-dir="minus" >
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_minus.svg"); ?>
 				</a>
 				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_offset_plus'] ?>" class="grix_button grix_bt grix_bt_offset" data-bt="offset" data-dir="plus" >
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</a>
 			</div>
 			<div class="buttons_label">offset <span class="info info_offset"></span></div>
@@ -80,10 +80,10 @@
 		<div class="button_wrap button_push_wrap">
 			<div class="buttons">
 				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_push_minus'] ?>" class="grix_button grix_bt grix_bt_push" data-bt="push" data-dir="minus" >
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_minus.svg"); ?>
 				</a>
 				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_push_plus'] ?>" class="grix_button grix_bt grix_bt_push" data-bt="push" data-dir="plus" >
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</a>
 			</div>
 			<div class="buttons_label">push <span class="info info_push"></span></div>
@@ -92,10 +92,10 @@
 		<div class="button_wrap button_pull_wrap ">
 			<div class="buttons">
 				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_pull_minus'] ?>" class="grix_button grix_bt grix_bt_pull" data-bt="pull" data-dir="minus" >
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_minus.svg"); ?>
 				</a>
 				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_pull_plus'] ?>" class="grix_button grix_bt grix_bt_pull" data-bt="pull" data-dir="plus" >
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</a>
 			</div>
 			<div class="buttons_label">pull <span class="info info_pull"></span></div>
@@ -245,17 +245,21 @@
 			var grixLightbox = new GrixLightbox();
 			grixLightbox.bindEvents();
 
-			var data = '<?= $this->data ?>';
-			// console.log(data);
-			if (data=='') {
+			var stData = '<?= $this->data ?>';
+			// console.log(typeof data);
+			if (stData=='') {
 				var obRow = new GrixRow();
 				obRow.addCol(new GrixCol());
-				data = "["+JSON.stringify(obRow)+"]";			
+				// Convert the JavaScript object into a string
+				stData = "["+JSON.stringify(obRow)+"]";			
 			};
+
+			// turn the string into a JavaScript object
+			obData = JSON.parse(stData);
 
 			var obCfg = {
 				articleId : <?= $this->id ?> ,
-				data : JSON.parse(data),
+				data : obData,
 				grixLightbox : grixLightbox,
 				requTok : '<?= REQUEST_TOKEN ?>'
 			}
@@ -265,7 +269,7 @@
 			grix.init();
 			
 			$('#grix_deleteAll').click(function(e){
-				console.log('delete all');				
+				// console.log('delete all');				
 				var obRow = new GrixRow();
 				obRow.addCol(new GrixCol());
 				var stJson = "["+JSON.stringify(obRow)+"]";

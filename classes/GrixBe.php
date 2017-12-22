@@ -123,7 +123,7 @@ class GrixBe extends \BackendModule
 		// get all the CEs of this article created by Grix
 		$objCEsUsed = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($id);
 		$arrCEsUsed = unserialize($objCEsUsed->CEsUsed);
-		if ($arrCEsUsed==false) {
+		if ($arrCEsUsed == false) {
 			$arrCEsUsed = array();
 		}
 		$intCEsUsedNr = count($arrCEsUsed);

@@ -17,6 +17,8 @@ $GLOBALS['TL_DCA']['tl_article']['fields']['grixJs'] = array
 );
 
 
+
+
 $GLOBALS['TL_DCA']['tl_article']['fields']['grixHtmlFrontend'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['grixHtmlFrontend'],
@@ -30,6 +32,7 @@ $GLOBALS['TL_DCA']['tl_article']['fields']['grixHtmlFrontend'] = array
 	),
 	'sql'                     => "mediumtext NULL"
 );
+
 
 
 

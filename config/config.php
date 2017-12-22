@@ -29,6 +29,8 @@ array_insert($GLOBALS['BE_MOD']['design'], 1, array
 	)
 
 ));
+
+
 /**
  * Hooks
  */
