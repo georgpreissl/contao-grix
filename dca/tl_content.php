@@ -19,15 +19,13 @@ class gp_grix extends tl_content
 {
 
 	/**
-	 * Add the grix js for CE handling
+	 * Add the grix js when a new CE is created via grix
 	 */
     public function addGrixJs(DataContainer $dc)
     {
 
     	if(\Input::get('grix')=='create')
     	{
-		    // add "jQuery.noConflict()" at the beginning of TL_JAVASCRIPT
-			array_unshift($GLOBALS['TL_JAVASCRIPT'], 'system/modules/gp_grix/assets/js/jquery.noconflict.js');
 
 			// get the jquery src, e.g.: assets/jquery/core/1.11.3/jquery.min.js";
 			$strJQuerySrc = 'assets/jquery/core/' . reset((scandir(TL_ROOT . '/assets/jquery/core', 1))) . '/jquery.min.js';
@@ -35,7 +33,11 @@ class gp_grix extends tl_content
 		    // add the jquery-library at the beginning of TL_JAVASCRIPT
 			array_unshift($GLOBALS['TL_JAVASCRIPT'], $strJQuerySrc);
 
-			// add the js for ce handling
+		    // add "jQuery.noConflict()" after the jquery-library
+			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/jquery.noconflict.js';
+
+			// add the js for ce creating
+    		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grixElement.js';
     		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grixCE.js';
 			
     	};

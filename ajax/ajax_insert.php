@@ -5,9 +5,9 @@
 
 
 
-$grixjs = $_GET['grixjs'];  
-$articleId = $_GET['articleId'];  
-$ceId = $_GET['ceId'];  
+$grixjs = $_POST['grixjs'];  
+$articleId = $_POST['articleId'];  
+$ceId = $_POST['ceId'];  
 
 
 

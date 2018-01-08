@@ -1,11 +1,16 @@
+
 // define the GrixElement Class
 function GrixElement() {
 	this.type = "el";
+	this.margin = {
+		xs:"",
+		sm:"",
+		md:"",
+		lg:""
+	};
 }
 
-GrixElement.prototype.walk = function(){
-  alert ('I am walking!');
-};
+
 GrixElement.prototype.sayHello = function(){
   alert ('hello');
 };
@@ -20,37 +25,34 @@ function GrixCol() {
 	// Call the parent constructor
 	GrixElement.call(this);
 
-
 	this.type = 'col';
 	
 	this.width = {
-		xs:"x",
-		sm:"x",
-		md:"x",
-		lg:"x"
+		xs:"12",
+		sm:"",
+		md:"",
+		lg:""
 	};
 	this.offset = {
-		xs:"x",
-		sm:"x",
-		md:"x",
-		lg:"x"
+		xs:"",
+		sm:"",
+		md:"",
+		lg:""
 	};	
 	this.push = {
-		xs:"x",
-		sm:"x",
-		md:"x",
-		lg:"x"
+		xs:"",
+		sm:"",
+		md:"",
+		lg:""
 	};
 	this.pull = {
-		xs:"x",
-		sm:"x",
-		md:"x",
-		lg:"x"
+		xs:"",
+		sm:"",
+		md:"",
+		lg:""
 	};
 	this.classes = '';
 	this.elements = [];
-
-
 }
 
 // inherit GrixElement
@@ -64,10 +66,7 @@ GrixCol.prototype.sayHello = function(){
   alert('hi, I am a GrixCol');
 }
 
-// add sayGoodBye method
-GrixCol.prototype.sayGoodBye = function(){
-  alert('goodBye');
-}
+
 
 
 
@@ -79,7 +78,6 @@ function GrixRow() {
 	// Call the parent constructor
 	GrixElement.call(this);
 
-
 	this.type = 'row';
 	this.unitsConf = {
 		xs:"12",
@@ -87,17 +85,9 @@ function GrixRow() {
 		md:"12",
 		lg:"12"
 	};
-	// this.units = '12';
-	// this.boot = {
-	//     xs:12,
-	//     sm:12,
-	//     md:12,
-	//     lg:12
-	// };
+
 	this.classes = '';
 	this.elements = [];
-
-
 }
 
 // inherit GrixElement
@@ -111,5 +101,29 @@ GrixRow.prototype.constructor = GrixRow;
 GrixRow.prototype.addCol = function(obCol){
 	this.elements.push(obCol);
 }
+
+
+
+
+
+// define the GrixCE class
+function GrixCE() {
+
+	// Call the parent constructor
+	GrixElement.call(this);
+
+	this.type = 'ce';
+
+
+	this.classes = '';
+	
+}
+
+// inherit GrixElement
+GrixCE.prototype = Object.create(GrixElement.prototype);
+
+// correct the constructor pointer because it points to GrixElement
+GrixCE.prototype.constructor = GrixCE;
+
 
 

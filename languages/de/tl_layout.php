@@ -14,3 +14,4 @@
  * CSS Framework Name
  */
 $GLOBALS['TL_LANG']['tl_layout']['../../../system/modules/gp_grix/assets/css/bootstrap.css'] = 'Grix Bootstrap';
+$GLOBALS['TL_LANG']['tl_layout']['../../../system/modules/gp_grix/assets/css/margin-bottom.css'] = 'Grix Margin-Bottom';

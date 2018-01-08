@@ -1,21 +1,36 @@
 (function($){
 
 
-
-
-
 	window.Grix = function(obCfg){
 		var obData = obCfg.data;
 		var level = 0;
 		var device = 'lg';
-		var boColIsAct = false;
-		var arColAct = [];
-		var arResKeys = [37,39,27,32];
+		var arAct = [];
+		var arResKeys = [38,40,49,50,51,52,83,37,39,27,32];
 		var arBootProps = ['width','offset','push','pull'];
 		var arDevices = ['xs','sm','md','lg'];
+		var $grix = $('.grix');
+		var $body = $('body');
+
+
+		function scanForCEs(ob){
+			var arScanCEs = [];
+			scan(ob, arScanCEs);
+			return arScanCEs;
+		}
+
+		function scan(obj,ar){
+			if (obj.type == 'ce') ar.push(obj.id);
+			if (obj.elements) {
+				for (var i = 0; i < obj.elements.length; i++) {
+					var obChild = obj.elements[i];
+					scan(obChild,ar);
+				};
+			};
+		};
+
 
 		this.init = function(){
-
 			initUi();
 			drawGrix();
 		}
@@ -23,230 +38,203 @@
 
 		function initUi(){
 
-			$('.header_back').click(function(e) {
-				console.log(Contao.request_token);
-				$.ajax({
-					type: 'POST',
-					data: {
-						'action':'jobo',
-						'a': 'arBootProps',
-						'REQUEST_TOKEN':Contao.request_token
-					},
-					dataType: 'json',
-					cache: false		     	
-
-		        }).done(function(obj) {
-		        	console.log('this');
-					console.log(obj);
-				});	
-		        return false;				
-				e.preventDefault();
-			});
-
 			$(document).keydown(function(e){
 				var key = e.keyCode;
 				// console.log(key);
-			    // 37 = left
-			    // 39 = right
-			    // 27 = esc
-			    // 32 = space bar
+
 			    if (arResKeys.indexOf(key) != -1) {
 
-			    	// left and right keys
-			    	if (key == 39 || key == 37) {
-						if (arColAct.length) {
-							// a column is active, change unit values
-					    	$('.c.active').each(function(index, el) {
-					    		
-						    	var obRow = getObjectsById($(this));
-						    	var obCol = obRow.elements[obRow.pos];
-						    	var nrU = obCol.width[device];
-							    key == 39 ? nrU++ : nrU--;
-							    obCol.width[device] = String(nrU);
-					    	});
+				    // save
+					if((e.ctrlKey || e.metaKey) && e.which == 83) $('input.grix_save').trigger('click');
 
-						} else {
-						    // no column active, change device
-						    if (key == 39) {
-						    	$('.grix_device_switch_next').trigger('click');
-						    }
-						    if (key == 37) {
-						    	$('.grix_device_switch_prev').trigger('click');
-						    }
-						}
-			    	}
+					// change device
+					if (key == 49) $('.grix_device_xs').trigger('click');
+					if (key == 50) $('.grix_device_sm').trigger('click');
+					if (key == 51) $('.grix_device_md').trigger('click');
+					if (key == 52) $('.grix_device_lg').trigger('click');
+
+			    	// left and right keys
+					if (key == 37 && arAct.length) $('.grix_bt_width_minus').trigger('click');
+					if (key == 39 && arAct.length) $('.grix_bt_width_plus').trigger('click');
+
+			    	// up and down keys
+					if (key == 38 && arAct.length) $('.grix_bt_margin_minus').trigger('click');
+					if (key == 40 && arAct.length) $('.grix_bt_margin_plus').trigger('click');
 
 				    // esc-key – unselect every column
-				    if (key == 27) { 
-						if (boColIsAct) {
-					    	// console.log('unselect');
-					    	arColAct = [];
-					    	$('.c').removeClass('active');
-					    	boColIsAct = false;
-					    	$(".info").text('');
-				    	}
-				    }
+				    if (key == 27) $('.grix_deselect').trigger('click');
 
 				    // space bar – toggle preview
-				    if (key == 32) { 
-						$('body').toggleClass('grix_preview');
-				    }
+				    if (key == 32) $body.toggleClass('grix_preview');
+
 			    	e.preventDefault();
 				}
-
 			});
 
-
 			$('.grix_device').click(function(e){
-				$(this).addClass('active').siblings('.grix_device').removeClass('active');
 				device = $(this).data('device');
-
-				$('body').removeClass('grix_xs grix_sm grix_md grix_lg');
-				for (var i = 0; i < arDevices.length; i++) {
-					$('body').addClass('grix_'+arDevices[i]);
-					if (arDevices[i] == device) {
-						break;
-					};
-					
+				$(this).addClass('active').siblings().removeClass('active');
+				$body.removeClass('grix_xs grix_sm grix_md grix_lg');
+				for (var i = 0; i <= $(this).index('.grix_device'); i++) {
+					$body.addClass('grix_'+arDevices[i]);
 				};
-
-				e.preventDefault();
+				drawGrix();
 			})
 
-
 			$('.grix_device_switch').click(function(e){
-				if ($(this).data('direction')=='next') {
-					$next = $('.grix_device.active').next('.grix_device').length == 0 ? $('.grix_device').first() : $('.grix_device.active').next();
-				} else{
-					$next = $('.grix_device.active').prev('.grix_device').length == 0 ? $('.grix_device').last() : $('.grix_device.active').prev();
-				};
-				$next.trigger('click');
-				e.preventDefault();
+				var ix = $('.grix_device.active').index('.grix_device');
+				ix = $(this).data('direction') == 'next' ?  (ix+1 > 3 ? 0 : ix+1 ) : (ix-1 < 0 ? 3 : ix-1);
+				$('.grix_device').eq(ix).trigger('click');
 			})
 
 			$('.grix_toggle_preview').click(function(e) {
-				$('body').toggleClass('grix_preview');
-				e.preventDefault();
+				$body.toggleClass('grix_preview');
 			});
 
 			$('.grix_bt').click(function(e){
-				var prop = $(this).data('bt');
+				var prop = $(this).data('prop');
 				var dir = $(this).data('dir');
-				// console.log(prop);
-				if (arColAct.length) {
-					// a column is active, change unit values
-			    	$('.c.active').each(function(index, el) {
-			    		
-				    	var obRow = getObjectsById($(this));
-				    	var obCol = obRow.elements[obRow.pos];
-				    	var nrU = obCol[prop][device];
-				    	if (nrU=="x") {
-				    		if (prop=="width") {
-					    		nrU = 12;
-				    			
-				    		} else {
-					    		nrU = 0;
 
-				    		};
+				if (arAct.length) {
 
+					for (var i = 0; i < arAct.length; i++) {
+						
+				    	var obEl = getTarget(arAct[i]);
+						var nrMin = 0;
+						var nrMax = 12;
+						var nrV = '';
+
+						if (prop == 'width') nrMin = 1;
+						if (prop == 'margin') nrMax = 20;
+
+						for (var dev in obEl[prop]) {
+							var cv = obEl[prop][dev];
+							if (cv != '') nrV = cv;
+							if (dev == device) break;
+						};
+
+						// no value has been set yet
+				    	if (nrV == '') {
+							if (prop == 'width') {
+					    		nrV = 12;
+							} else {
+					    		nrV = 0;
+							}
 				    	};
-				    	nrU = parseInt(nrU);
-				    	// console.log(nrU);
-				    	if (dir=='minus') {
-						    if (nrU>0) {
-						    	nrU--;
-						    };
-				    	} else{
-				    		if (nrU<12) {
-				    			nrU++;
-				    		};
-				    	};
-				    	$('.info_'+prop).text(nrU);
-					    obCol[prop][device] = String(nrU);
-					    // eg: obCol.width.lg = 6
-			    	});
-			    	// redraw the grid every time the cols units are changed
+				    	
+				    	nrV = parseInt(nrV);
+						dir == 'minus' ? nrV-- : nrV++;
+						if (nrV < nrMin) nrV = nrMin;
+						if (nrV > nrMax) nrV = nrMax;
+
+				    	$('.info_'+prop).text(nrV);
+					    obEl[prop][device] = String(nrV);
+					    // eg: obEl.width.lg = 6
+
+			    	};
+			    	// redraw the grid every time the values are changed
 					drawGrix();
 				}
+			});
+
+
+			$('.grix_deselect').click(function(e) {
+				arAct = [];
+				$('.x').removeClass('active');
+				$grix.removeClass('act_row act_col act_ce');
+				$('.info').text('');
+			});
+
+
+			$('.grix_duplicate').click(function(e) {
+				if (arAct.length) {
+					for (var i = 0; i < arAct.length; i++) {
+						var id = String(arAct[i]);
+						var obT = getTarget(id);
+						var obP = getTarget(id,1);
+						var obTCopy = JSON.parse(JSON.stringify(obT));
+						obP.elements.splice(getIndex(id), 0, obTCopy);
+						drawGrix();
+					};
+				} else {
+					alert('Please select the elements to be duplicated first.')
+				}
+			});
+
+
+			$('.grix_save').click(function(e) {
+				saveGrix();
 				e.preventDefault();
-			})
+			});
 
 		}
 
 
-		function getObjectsById(el){
-			var stId = String(el.data("id"));
-			// console.log('stId: ',stId);
-	
+
+		function getTarget(el,ix){
+			ix = ix == undefined ? 0 : ix;
+
+			var stId = typeof el == 'string' ? el : String(el.data('id'));
+			var arId = stId.split('_');
+
+			var obRetObj = { elements: obData };
+			for (var i=0; i < arId.length-ix; i++) {
+				obRetObj = obRetObj.elements[arId[i]];
+			};
+			return obRetObj;
+		}
+
+		function getIndex(el,ix){
+			ix = ix == undefined ? 0 : ix;
+			var stId = typeof el == 'string' ? el : String(el.data("id"));
 			var arId = stId.split("_");
-			// console.log('arId: ',arId);
-			// console.log('arId.length: ',arId.length);
-
-			var obParent = {
-				elements: obData,
-				pos: parseInt(arId[0])
-			};
-			// console.log(arId[3]);
-			for (var i=0; i < arId.length-1; i++) {
-				obParent = obParent.elements[arId[i]];
-				obParent.pos = parseInt(arId[i+1]);
-			};
-				
-			// console.log('obParent: ',obParent);
-			return obParent;
+			var index = arId[ arId.length-(ix+1) ];
+			return index;
 		}
+
 		
 
 		// row functions
 
 
-		function addCol(el){
-
-			var obP = getObjectsById(el);
-
-			var arSibls = obP.elements[obP.pos].elements;
-
-			// Get the unit value of the first column sibling
-			var nrSiblsUnits = arSibls[0].width[device];
-
-			// Add the new column
+		function insertCol(el){
+			var obRow = getTarget(el);
 			var obCol = new GrixCol();
-			obCol.width[device] = nrSiblsUnits;
-			arSibls.push(obCol);
-			
+
+			// give it the width of the first column sibling
+			obCol.width[device] = obRow.elements[0].width[device];
+
+			obRow.elements.push(obCol);
 			drawGrix();
 		}
 
 		function addRow(el){
+			var obCol = getTarget(el,1);
 
-			var obP = getObjectsById(el);
+			// create a new row with one containing column
+			var obRowNew = new GrixRow();
+			obRowNew.addCol(new GrixCol());
 
-			// Create a new row with one containing column
-			var obRow = new GrixRow();
-			obRow.addCol(new GrixCol());
+			// insert the new row after the clicked one
+			obCol.elements.splice(getIndex(el)+1, 0, obRowNew);
 
-			if (el.data('type') == 'row') {
-				// Insert the new row after the clicked one
-				obP.elements.splice(obP.pos+1, 0, obRow);
-			} else {
-				// Insert the new row into the clicked column
-				obP.elements[obP.pos].elements.push(obRow);
-			};
 			drawGrix();
 		}
 
-		function reorderRow(el){
-			var obP = getObjectsById(el);
+
+		function reorderRow(el,stDir){
+			var obP = getTarget(el,1);
+			// console.log('obP: ',obP);
+
 			var nrSwapIx;
 			var arRows = obP.elements;
-			var nrPos = obP.pos;
-			var obRow = obP.elements[obP.pos];
 
-			// console.log('stDir: ',stDir);
+			var nrPos = parseInt(getIndex(el));
 			// console.log('nrPos: ',nrPos);
-			// console.log('arRows: ',arRows);
 
-			if (el.data('dir') == 'up') {
+			var obRow = obP.elements[nrPos];
+
+			if (stDir == 'up') {
 				nrSwapIx = (nrPos-1 == -1 ? arRows.length-1 : nrPos-1);
 			} else {
 				nrSwapIx = (nrPos+1 == arRows.length ? 0 : nrPos+1);
@@ -256,40 +244,66 @@
 			arRows[nrSwapIx] = obRow;
 			drawGrix();
 		}	
-		
+
 		function deleteRow(el){
-			var obP = getObjectsById(el);
-			obP.elements.splice(obP.pos,1);
-			drawGrix();
+			var obP = getTarget(el,1);
+			var obT = getTarget(el);
+
+			var arCEsFound = scanForCEs(obT);
+			// console.log(arCEsFound);
+
+			obP.elements.splice(getIndex(el),1);
+			$.ajax({
+				type: 'POST',
+				data: {
+					'action':'updateUsedCEs',
+					'ces': arCEsFound,
+					'articleId': obCfg.articleId,
+					'REQUEST_TOKEN':Contao.request_token
+				},
+				dataType: 'json',
+				cache: false		     	
+
+			}).done(function(obj) {
+				console.log('UsedCEs: ',obj.usedCEs);
+				console.log('CEsToDelete: ',obj.CEsToDelete);
+				console.log('newUsedCEs: ',obj.newUsedCEs);
+				console.log('affectedRows: ',obj.affectedRows);
+				drawGrix();
+			});
 		}
 
 		function splitCol(el,stUnits){
 
-			var obP = getObjectsById(el);
-
-			// var nrPos = obP.pos;
-			var obRow = obP.elements[obP.pos];
+			var obRow = getTarget(el);
 			obRow.unitsConf[device] = stUnits;
-			//console.log('obRow.unitsConf: ',obRow.unitsConf);
-			//console.log('obRow: ',obRow);
 			var arCols = obRow.elements;
-			//console.log('arCols: ',arCols);
 			var arUnits = isNaN(stUnits) ? stUnits.split('-') : [stUnits];
 
 			// how many cols do we have
 			var nrColsOld = arCols.length;
+			// console.log('nrColsOld: ',nrColsOld);
 
-			// console.log(arUnits);
-			var cc = 0;
-			for(i=0; i < arCols.length; i++){
-					// change existing col
-					// arCols[i].units = arUnits[i];
-					// console.log(arUnits[cc]);
-					arCols[i].width[device] = arUnits[cc];
-					if (cc==arUnits.length-1 ){
-						cc = 0;
+			// how many cols do we need at least
+			var nrColsNew = arUnits.length;
+			// console.log('nrColsNew: ',nrColsNew);
+
+			if (nrColsNew > nrColsOld) {
+				var nrColsToCreate = nrColsNew - nrColsOld;
+				for (var i = 0; i < nrColsToCreate; i++) {
+					var obNewCol = new GrixCol();
+					arCols.push(obNewCol);
+				};
+			};
+
+			// change existing cols
+			var z = 0;
+			for(var i=0; i < arCols.length; i++){
+					arCols[i].width[device] = arUnits[z];
+					if (z == arUnits.length-1){
+						z = 0;
 					} else {
-						cc++;
+						z++;
 					}
 			}
 			drawGrix();
@@ -297,50 +311,36 @@
 
 
 
-		function splitColOld(el,stUnits){
 
-			var obP = getObjectsById(el);
-
-			var arTarget = obP.elements;
-			// var nrPos = obP.pos;
-			var obRow = obP.elements[obP.pos];
-			obRow.unitsConf = stUnits;
-			//console.log('obRow.unitsConf: ',obRow.unitsConf);
-			//console.log('obRow: ',obRow);
-			var arElements = obRow.elements;
-			//console.log('arElements: ',arElements);
-			var arUnits = isNaN(stUnits) ? stUnits.split('-') : [stUnits];
-
-			// how many cols do we have
-			var nrColsOld = arElements.length;
-
-			// How many columns are to be created
-			var nrColsNew = arUnits.length;
-			
-			// delete useless columns
-			if(nrColsOld > nrColsNew ){
-				var nrCut = nrColsOld - nrColsNew;
-				arElements.splice(-nrCut,nrCut)
-			}
-			
-			for(i=0; i < nrColsNew; i++){
-				if(arElements[i] != undefined){
-					// change existing col
-					// arElements[i].units = arUnits[i];
-					arElements[i].width[device] = arUnits[i];
-				} else {
-					// create new column
-					var obNewCol = new GrixCol();
-					obNewCol.width[device] = parseInt(arUnits[i]);
-					console.log(obNewCol.width);
-					arElements.push(obNewCol)
-				}
-			}
-			drawGrix();
-		}
 		
 
 		// col functions
+
+
+		// funktioniert NICHT!!!
+		// speichert im NULL in grixJs !!!
+		function addCEXXX(el){
+			var stPhId = el.data('id');
+
+			var stFormData = $("#grixBeForm").serialize()+'&'+$.param({ action: 'saveBeforeAddCE'});
+
+			// Save the current status
+			$.ajax({
+				type: 'POST',
+				data: stFormData,
+				dataType: 'json',				
+				success: function(data){
+					console.log(data);
+					// Status has been saved, now create the new CE
+					// window.location.href = 'contao/main.php?do=article&table=tl_content&act=create&mode=2&pid='+obCfg.articleId+'&id='+obCfg.articleId+'&grix=create&rt='+obCfg.requTok+'&phid='+stPhId;
+				},
+				error: function (xhr, textStatus, errorThrown) {
+					alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
+				}
+			});
+		}
+
+
 
 		function addCE(el){
 			var stPhId = el.data('id');
@@ -350,7 +350,7 @@
 
 			// Save the current status
 			$.ajax({
-				method: 'post',
+				type: 'POST',
 				url: 'system/modules/gp_grix/ajax/ajax_save.php',
 				data: stFormData,
 				success: function(data){
@@ -364,21 +364,31 @@
 			});
 		}
 
+
+
+		function insertRow(el){
+			var obCol = getTarget(el);
+
+			var obRow = new GrixRow();
+			obRow.addCol(new GrixCol());
+
+			obCol.elements.push(obRow);
+			drawGrix();
+		}
+
 		function deleteCol(el){
-
-			var obP = getObjectsById(el);
-			// console.log('obP:',obP);
-
-			var arCols = obP.elements;
-			// console.log('arCols:',arCols);
+			
+			var obRow = getTarget(el,1);
+			var obCol = getTarget(el);
 
 			// dont delete the last column
-			if (obP.pos==0 && arCols.length==1) {
-				return false;
-			};
+			if (obRow.elements.length == 1) return false;
 
-			var obCol = arCols[obP.pos];
-			//console.log('obCol:',obCol);
+			var arCEsFound = scanForCEs(obCol);
+			// console.log(arCEsFound);
+
+			var arCols = obRow.elements;
+			// console.log('arCols:',arCols);
 
 			// how many units exist before deleting
 			var nrUnitsExist = 0;
@@ -392,7 +402,7 @@
 			// console.log('nrUnitsToSubtr: ',nrUnitsToSubtr);
 
 			// delete the col from the array
-			arCols.splice(obP.pos,1);
+			arCols.splice(getIndex(el),1);
 
 			var nrColsRemain = arCols.length;
 			// console.log('nrColsRemain: ',nrColsRemain);
@@ -402,28 +412,39 @@
 
 			if (nrUnitsRemain <= 12) {
 
-
-				// var nrUnitsEachAdd = nrUnitsToSubtr / nrColsRemain;
-				// console.log('nrUnitsEachAdd:',nrUnitsEachAdd);
-
 				var arUnitsConf = [];
 
 				// add the new units-val to each col
 				for(i=0; i<arCols.length; i++){
 					var obCol = arCols[i];
-					// var nrUnitsNew = parseInt(obCol.units);// + nrUnitsEachAdd;
-					// obCol.units = nrUnitsNew;
 					arUnitsConf.push(obCol.width[device]);
 				}
 
-				obP.unitsConf[device] = arUnitsConf.join('-');
+				obRow.unitsConf[device] = arUnitsConf.join('-');
 				// console.log('stUnitsConf:',stUnitsConf);
 			} else {
-				obP.unitsConf[device] = arCols[0].width[device];
+				obRow.unitsConf[device] = arCols[0].width[device];
 
 			}
 
-			drawGrix();
+			$.ajax({
+				type: 'POST',
+				data: {
+					'action':'updateUsedCEs',
+					'ces': arCEsFound,
+					'articleId': obCfg.articleId,
+					'REQUEST_TOKEN':Contao.request_token
+				},
+				dataType: 'json',
+				cache: false		     	
+			}).done(function(obj) {
+				console.log('UsedCEs: ',obj.usedCEs);
+				console.log('CEsToDelete: ',obj.CEsToDelete);
+				console.log('newUsedCEs: ',obj.newUsedCEs);
+				console.log('affectedRows: ',obj.affectedRows);
+				drawGrix();
+			});
+
 		}
 
 
@@ -432,19 +453,14 @@
 
 
 		function editElement(el){
-			var obP = getObjectsById(el);
-			var stId = obP.elements[obP.pos].id;
-
-			// Serialize the data in the form
-			var stData = $("#grixBeForm").serialize();
 
 			$.ajax({
 				method: 'post',
 				url: 'system/modules/gp_grix/ajax/ajax_save.php',
-				data: stData,
+				data: $("#grixBeForm").serialize(),
 				success: function(data){
 					// current status has been saved, now edit the CE
-					window.location.href= 'contao/main.php?do=article&table=tl_content&act=edit&id='+stId+'&grix=edit&pid='+obCfg.articleId+'&rt='+obCfg.requTok;
+					window.location.href= 'contao/main.php?do=article&table=tl_content&act=edit&id='+getTarget(el).id+'&grix=edit&pid='+obCfg.articleId+'&rt='+obCfg.requTok;
 				},
 				error: function (xhr, textStatus, errorThrown) {
 					alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
@@ -455,27 +471,86 @@
 
 		function removeElement(el){
 			// remove the element, don't delete it permanently
-			var obP = getObjectsById(el);
-			obP.elements.splice(obP.pos,1);
-			drawGrix();
+			var id = el.data('id');
+			var obCol = getTarget(id,1);
+			var obEl = getTarget(id);
+
+			obCol.elements.splice(getIndex(id),1);
+
+			$.ajax({
+				type: 'POST',
+				data: {
+					'action':'updateUsedCEs',
+					'ces': [obEl.id],
+					'articleId': obCfg.articleId,
+					'REQUEST_TOKEN':Contao.request_token
+				},
+				dataType: 'json',
+				cache: false		     	
+
+			}).done(function(obj) {
+				console.log('UsedCEs: ',obj.usedCEs);
+				console.log('CEsToDelete: ',obj.CEsToDelete);
+				console.log('newUsedCEs: ',obj.newUsedCEs);
+				console.log('affectedRows: ',obj.affectedRows);
+				drawGrix();
+			});	
 
 		}
 
+
+
+function updateUsedCEs() {
+	var id = el.data('id');
+	var obT = getTarget(id);
+	var arCEsFound = scanForCEs(obT);
+	// console.log(arCEsFound);
+
+	var obP = getTarget(id,1);
+	obP.elements.splice(getIndex(id),1);
+
+
+	$.ajax({
+		type: 'POST',
+		data: {
+			'action':'updateUsedCEs',
+			'ces': arCEsFound,
+			'articleId': obCfg.articleId,
+			'REQUEST_TOKEN':Contao.request_token
+		},
+		dataType: 'json',
+		cache: false		     	
+
+	}).done(function(obj) {
+		console.log('UsedCEs: ',obj.usedCEs);
+		console.log('CEsToDelete: ',obj.CEsToDelete);
+		console.log('newUsedCEs: ',obj.newUsedCEs);
+		console.log('affectedRows: ',obj.affectedRows);
+
+
+		drawGrix();
+
+
+	});	
+}
+
+
 		function deleteElement(el){
 			// delete the element permanently
-			var obP = getObjectsById(el);
+			var obCol = getTarget(el,1);
+			var obCE = getTarget(el);
 			// console.log('dle');
 			$.ajax({
 				method: 'get',
 				url: 'system/modules/gp_grix/ajax/ajax_delete.php',
 				data: {
-					id: obP.elements[obP.pos].id,
+					id: obCE.id,
 					articleId: obCfg.articleId,
 				},
 				success: function(data){
 					// console.log("deleted!");
 					// console.log(data);
-					obP.elements.splice(obP.pos,1);
+					obCol.elements.splice(getIndex(el),1);
 					drawGrix();
 				},
 				error: function (xhr, textStatus, errorThrown) {
@@ -484,106 +559,79 @@
 			});
 		}
 
-		function adjustElement(obP, obCfgLb){
-			
-			// The element which should be adjusted
-			var obElement = obP.elements[obP.pos];
-			// console.log('obElement: ',obElement);
+		function adjustRow(obRow, obCfgLb){
+			// add the choosen css classes to the row
+			obRow.classes = obCfgLb.arClasses;
 
-			// Adjust css classes choosen in the lightbox
-			obElement.classes = obCfgLb.arClasses;
+			var arCols = obRow.elements;
+			// console.log('arCols: ',arCols);
 
+			for (var dev in obCfgLb.unitsConf) {
+				var stConf = String(obCfgLb.unitsConf[dev]);
+				obRow.unitsConf[dev] = stConf;
 
-			// Adjust rows
+				var arConf = stConf.split('-');
 
-			if (obElement.type == 'row') {
-
-				var arCols = obElement.elements;
-				// console.log('arCols: ',arCols);
-
-				for (var property in obCfgLb.unitsConf) {
-
-					var stNewUnitsConf = obCfgLb.unitsConf[property];
-					// console.log('stNewUnitsConf: ', stNewUnitsConf);
-					stNewUnitsConf = stNewUnitsConf+'';
-
-					if (stNewUnitsConf.indexOf('-') > -1) {
-						arNewUnitsConf = stNewUnitsConf.split('-');
-					  // alert("hello found inside your_string");
+				for (var i = 0; i < arCols.length; i++) {
+					var obCol = arCols[i];
+					// console.log(obCol);
+					// obCol.width[dev] = obCfgLb.unitsConf[dev];
+					if (arConf[i]==undefined) {
+						obCol.width[dev] = arConf[0];
 					} else {
-						arNewUnitsConf = [stNewUnitsConf,stNewUnitsConf,stNewUnitsConf,stNewUnitsConf,stNewUnitsConf,stNewUnitsConf,stNewUnitsConf]
+						obCol.width[dev] = arConf[i];
 					}
-
-					// console.log('arNewUnitsConf: ', arNewUnitsConf);
-
-
-					obElement.unitsConf[property] = stNewUnitsConf;
-
-					for (var i = 0; i < arCols.length; i++) {
-						var obCol = arCols[i];
-						// obCol.width[property] = obCfgLb.unitsConf[property];
-						if (arNewUnitsConf[i]==undefined) {
-							obCol.width[property] = arNewUnitsConf[0];
-							
-						} else {
-							obCol.width[property] = arNewUnitsConf[i];
-
-						}
-						// console.log(obCol.width);
-					};
-
-				}
-			}
-
-
-			// Adjust cols
-
-			if (obElement.type == 'col') {
-
-				if (!obCfgLb.arCEs.length) {
-					drawGrix();
-				};
-
-				// console.log('obCfgLb.arCEs: ',obCfgLb.arCEs);
-
-				// if CEs have been selected in the lightbox
-				if (obCfgLb.arCEs.length) {
-					for (var i = 0; i < obCfgLb.arCEs.length; i++) {
-						var obNewCE = {
-							type: "ce",
-							id: obCfgLb.arCEs[i]+""
-						};
-						$('#grixce_'+obCfgLb.arCEs[i]).clone().appendTo('.grix_celist');
-						obElement.elements.push(obNewCE);
-					};
-					// console.log('obElement.elements: ',obElement.elements);
-					// console.log('obCfgLb.articleId: ',obCfgLb.articleId);
-					// update the CEsUsed-field of the article
-					// console.log('obCfgLb.arCEs: ',obCfgLb.arCEs);
-					var jsonString = JSON.stringify(obCfgLb.arCEs);
-					
-					$.ajax({
-						type: 'GET',
-						url: 'system/modules/gp_grix/ajax/ajax_insertce.php',
-						data: {
-							articleId: obCfg.articleId,
-							arCEs: jsonString
-						},
-						// dataType: 'json',
-						success: function(msg){
-							console.log('insertce-message: ',msg);
-							//console.log('obCol:',obCol);
-							drawGrix();
-
-							
-						},
-						error: function (xhr, textStatus, errorThrown) {
-							alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
-						}
-					});
-
 				};
 			}
+			drawGrix();
+			// console.log(obRow.unitsConf);
+		}
+
+		function adjustCol(obCol, obLbCfg){
+
+			// add the choosen css classes to the col
+			obCol.classes = obLbCfg.arClasses;
+
+			// console.log('obLbCfg.arCEs: ',obLbCfg.arCEs);
+			if (!obLbCfg.arCEs.length) {
+				drawGrix();
+			} else {
+				// CEs have been selected in the lightbox
+				for (var i = 0; i < obLbCfg.arCEs.length; i++) {
+
+
+					var obCE = new GrixCE();
+					obCE.id = String(obLbCfg.arCEs[i]);
+					// var obNewCE = {
+					// 	type: "ce",
+					// 	id: String(obLbCfg.arCEs[i])
+					// };
+					obCol.elements.push(obCE);
+					$('#grixce_'+obLbCfg.arCEs[i]).clone().appendTo('.grix_celist');
+				};
+				// console.log('obCol.elements: ',obCol.elements);
+				// console.log('obCfg.articleId: ',obCfg.articleId);
+
+				// update the CEsUsed-field of the article
+				$.ajax({
+					type: 'GET',
+					url: 'system/modules/gp_grix/ajax/ajax_insertce.php',
+					data: {
+						articleId: obCfg.articleId,
+						arCEs: JSON.stringify(obLbCfg.arCEs)
+					},
+					// dataType: 'json',
+					success: function(msg){
+						console.log('insertce-message: ',msg);
+						drawGrix();
+					},
+					error: function (xhr, textStatus, errorThrown) {
+						alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
+					}
+				});
+
+			};
+			
 
 		}
 
@@ -593,45 +641,62 @@
 		function addUi(){
 
 
-			for (var i = 0; i < arColAct.length; i++) {
-				$(".grix").find("[data-id='" + arColAct[i] + "']").addClass('active')
+			for (var i = 0; i < arAct.length; i++) {
+				$(".grix").find("[data-id='"+ arAct[i] +"']").addClass('active');
 			}
 
-			$(".c").click(function(event) {
-
-				if ($(this).hasClass('active')) {
-					arColAct.splice($.inArray($(this).data('id'), arColAct),1);
-				} else {
-					if (event.shiftKey) {
-						arColAct.push($(this).data('id'));
-					} else {
-						arColAct = [$(this).data('id')];
-					}
-
-					var obRow = getObjectsById($(this));
-					var arCols = obRow.elements;
-					var obCol = obRow.elements[obRow.pos];
-
-
-					for (var i = 0; i < arBootProps.length; i++) {
-						var prop = arBootProps[i]
-						var nrU = obCol[prop][device];
-						$('.info_'+prop).text(nrU);
-					};
-					// console.log(nrU);
-
-				}
-				boColIsAct = arColAct.length ? true : false;
-				$('.c').removeClass('active');
-				for (var i = 0; i < arColAct.length; i++) {
-					$(".grix").find("[data-id='" + arColAct[i] + "']").addClass('active')
-				}
-				if (arColAct.length==0) {
-					$(".info").text('');
+			$('.x').click(function(e) {
+				var id = String($(this).data('id'));
+				
+				if ($(this).hasClass('c')) {
+					stType = 'col';
 				};
-				// console.log('boColIsAct: ',boColIsAct);
-				// console.log('arColAct: ',arColAct);
-				event.stopPropagation();
+				if ($(this).hasClass('r')) {
+					stType = 'row';
+				}
+				if ($(this).hasClass('ce')) {
+					stType = 'ce';
+				}
+
+				// dont add elements with a different type to the selection
+				if (arAct.length > 0 && e.shiftKey) {
+					if(getTarget(arAct[0]).type != stType) {
+						return false;
+					};
+				};
+
+				var index = $.inArray(id, arAct);
+
+				if (index >= 0) {
+					// the element is already selected, remove it from selection
+					arAct.splice(index,1);
+				} else {
+					// select the element
+					e.shiftKey ? arAct.push(id) : arAct = [id];
+					if (stType == 'col') {
+						var obCol = getTarget($(this));
+						for (var i = 0; i < arBootProps.length; i++) {
+							var prop = arBootProps[i]
+							var nrV = obCol[prop][device];
+							$('.info_'+prop).text(nrV);
+						};
+					};
+				}
+
+				$grix.removeClass('act_row act_col act_ce')
+				if (arAct.length>0) {
+					$grix.addClass('act_'+stType)
+				} else {
+					$('.info').text('');
+				}
+
+				$('.x').removeClass('active');
+				for (var i = 0; i < arAct.length; i++) {
+					$grix.find("[data-id='" + arAct[i] + "']").addClass('active');
+				}
+
+				// console.log('arAct: ',arAct);
+				e.stopPropagation();
 			});
 
 
@@ -648,34 +713,37 @@
 				},				
 				receive: function(event, ui) {
 					// get the menu of the targeted col
-					$targetGrixColMenu = $(this).siblings('.c_menu');
+					$elColMenu = $(this).siblings('.c_menu');
 				},
 		        stop: function(event, ui) {
 		            // if the ce has been sorted in the same col
-		            if(typeof $targetGrixColMenu === 'undefined'){
-						$targetGrixColMenu = $(this).siblings('.c_menu');
+		            if(typeof $elColMenu === 'undefined'){
+						$elColMenu = $(this).siblings('.c_menu');
 		            };
+		            // get the id of the targeted col
+		            var id = $elColMenu.data('id');
+
 		            // get the dragged dom element
 		            var $elCE = $(ui.item);
 
 					// get the origin col
-					var obOCol = getObjectsById($elCE);
+					var obOCol = getTarget($elCE,1);
 					// console.log('obOCol: ',obOCol);
 		            
 					// get the index of the element to delete
-					var nrIDel = obOCol.pos;
+					var nrIDel = getIndex($elCE);
 					// console.log('nrIDel: ',nrIDel);
 
 					// get the sorted content element
-					var obCE = obOCol.elements[obOCol.pos];
+					var obCE = obOCol.elements[nrIDel];
 					// console.log('obCE: ',obCE);
 
 					// get the targeted row
-					var obTRow = getObjectsById($targetGrixColMenu);
+					var obTRow = getTarget(id,1);
 					// console.log('obOCol.pos: ',obOCol.pos);
 
 					// get the targeted col
-					var obTCol = obTRow.elements[obTRow.pos];
+					var obTCol = getTarget(id);
 					// console.log('obTCol: ',obTCol);
 					
 					var boIsSameCol = (obOCol==obTCol);
@@ -686,7 +754,7 @@
 					// console.log('nrTIndex: ',nrTIndex);
 
 					if (boIsSameCol) {
-						if (obOCol.pos > nrTIndex) {
+						if (getIndex(id) > nrTIndex) {
 							// the element was been dragged upwards
 							nrIDel +=1;
 						} else{
@@ -707,31 +775,37 @@
 
 		    $('.c_content').disableSelection();
 
+
 			// row menu
 
-			$('.add_col').click(function(e){
-				addCol($(this).parent());
+			$('.ins_col').click(function(e){
+				insertCol($(this).parent());
 				e.preventDefault();
+				e.stopPropagation();
 			})
 
 			$('.add_row').click(function(e){
 				addRow($(this).parent());
 				e.preventDefault();
+				e.stopPropagation();
 			})
 
 			$('.hmi_sc').click(function(e){
 				splitCol($(this).parent().parent().parent(),$(this).data("units"));
 				e.preventDefault();
+				e.stopPropagation();
 			})
 
 			$('.reorder').click(function(e){
-				reorderRow($(this).parent());
+				reorderRow($(this).parent(),$(this).data('dir'));
 				e.preventDefault();
+				e.stopPropagation();
 			})
 
 			$('.del_row').click(function(e){
 				deleteRow($(this).parent());
 				e.preventDefault();
+				e.stopPropagation();
 			})
 			
 
@@ -743,10 +817,25 @@
 				e.stopPropagation();
 			})
 
-			$('.adj_ele').click(function(e){
+			$('.ins_row').click(function(e){
+				insertRow($(this).parent());
+				e.preventDefault();
+				e.stopPropagation();
+			})
+
+			$('.adj_row').click(function(e){
 				obCfg.grixLightbox.activate({
-					'obTarget': getObjectsById($(this).parent()),
-					'callBackFunction': adjustElement
+					'obTarget': getTarget($(this).parent()),
+					'callBackFunction': adjustRow
+				});
+				e.preventDefault();
+				e.stopPropagation();
+			})
+
+			$('.adj_col').click(function(e){
+				obCfg.grixLightbox.activate({
+					'obTarget': getTarget($(this).parent()),
+					'callBackFunction': adjustCol
 				});
 				e.preventDefault();
 				e.stopPropagation();
@@ -755,6 +844,7 @@
 			$('.del_col').click(function(e){
 				deleteCol($(this).parent());
 				e.preventDefault();
+				e.stopPropagation();
 			})
 
 
@@ -764,6 +854,7 @@
 			$('.edi_ele').click(function(e){
 				editElement($(this).parent());
 				e.preventDefault();
+				e.stopPropagation();
 			})
 
 			$('.ins_ele').click(function(e){
@@ -779,6 +870,7 @@
 					removeElement($(this).parent());
 				};
 				e.preventDefault();
+				e.stopPropagation();
 			})
 
 
@@ -798,8 +890,9 @@
 
 				// lets build a row
 				if(obEl.type == "row"){
+					var idx = (id=='' ? y : id+"_"+y);
 					
-					html += "<div class='r"+stClassSingle+"' >\
+					html += "<div class='x r"+stClassSingle+"' data-id='"+idx+"' >\
 								<div class='r_content'>";
 
 					if(obEl.elements){
@@ -811,7 +904,7 @@
 						for(var x=0; x < nrEls; x++){
 							var obCol = arCols[x];
 							var stNewId = (id=='' ? y+"_"+x : id+"_"+y+"_"+x);
-							var stClass = "c l"+level+stClassSingle;
+							var stClass = "x c l"+level+stClassSingle;
 
 
 							// add the bootstrap classes
@@ -819,7 +912,7 @@
 								var prop = arBootProps[i]
 								for (var dev in obCol[prop]) {
 									var stU = obCol[prop][dev];
-									if (stU !== "x") {
+									if (stU !== "") {
 										if (prop=="width") {
 											stClass += " col-"+dev+"-"+stU;
 										} else{
@@ -838,9 +931,9 @@
 						
 							html += "</div>\
 										<div class='menu c_menu cf' data-id='"+stNewId+"' data-type='col' >\
-											<a class='btn add_row' data-type='col' ></a>\
+											<a class='btn ins_row' data-type='col' ></a>\
 											<a class='btn add_ce' ></a>\
-											<a class='btn adj_ele' ></a>\
+											<a class='btn adj_col' ></a>\
 											<a class='btn del_col' ></a>\
 											<span class='db_info db_id'>"+stNewId+"</span>\
 											<span class='db_info db_level'>"+level+"</span>\
@@ -849,12 +942,12 @@
 						}
 					}
 
-					var stNewId = (id=='' ? y : id+"_"+y);
+					// var stNewId = (id=='' ? y : id+"_"+y);
 					html += "</div>\
-								<div class='menu r_menu cf' data-id='"+stNewId+"' data-type='row' >\
-									<a class='btn add_col' data-type='row' ></a>\
+								<div class='menu r_menu cf' data-id='"+idx+"' data-type='row' >\
+									<a class='btn ins_col' data-type='row' ></a>\
 									<a class='btn add_row' data-type='row' ></a>\
-									<a class='btn adj_ele' ></a>\
+									<a class='btn adj_row' ></a>\
 									<div class='btn split_col' style='background-image:url(system/modules/gp_grix/assets/img/col-icons/col-icon-"+obEl.unitsConf[device]+".png)' >\
 										<div class='h_menu h_menu_split_col'>\
 											<a class='btn hmi_sc' data-units='12' ></a>\
@@ -873,8 +966,9 @@
 									<a class='btn reorder' data-dir='up' ></a>\
 									<a class='btn reorder' data-dir='down' ></a>\
 									<a class='btn del_row' ></a>\
-									<span class='db_info db_id'>"+stNewId+"</span>\
+									<span class='db_info db_id'>"+idx+"</span>\
 								</div>\
+								<div class='ce_mb'>"+createBeMargin(obEl)+"</div>\
 							</div>";
 				}
 
@@ -882,8 +976,9 @@
 				if(obEl.type == "ce"){
 					var stNewId = (id=='' ? y : id+"_"+y);
 					var stCeHtml = $('#grixce_'+obEl.id).html();
+					var stClass = "x ce";
 
-					html += "<div class='ce' data-id='"+stNewId+"' >\
+					html += "<div class='"+stClass+"' data-id='"+stNewId+"' >\
 								<div class='ce_content'>"+stCeHtml+"</div>\
 								<div class='menu ce_menu cf' data-id='"+stNewId+"' >\
 									<a class='btn edi_ele' ></a>\
@@ -891,6 +986,7 @@
 									<a class='btn del_ele' ></a>\
 									<span class='db_info db_id'>"+stNewId+"</span>\
 								</div>\
+								<div class='ce_mb'>"+createBeMargin(obEl)+"</div>\
 							</div>";
 
 				}
@@ -907,7 +1003,8 @@
 
 			for(var y=0; y < arEls.length; y++){
 				var obEl = arEls[y];
-				var stClassCust = obEl.classes ? " " + obEl.classes.join(' ') : "";
+				var stClassCust = obEl.classes ? " " + obEl.classes.join(" ") : "";
+				stClassCust = createFeMargin(obEl,stClassCust);
 
 				// lets build a row
 				if(obEl.type == "row"){
@@ -922,13 +1019,14 @@
 							var obCol = arCols[x];
 							var stNewId = (id=="" ? y+"_"+x : id+"_"+y+"_"+x);
 							var stClass = "l"+level;
+							stClass = createFeMargin(obCol,stClass);
 
 							// add the bootstrap classes
 							for (var i = 0; i < arBootProps.length; i++) {
 								var prop = arBootProps[i]
 								for (var dev in obCol[prop]) {
 									var stU = obCol[prop][dev];
-									if (stU !== "x") {
+									if (stU !== "") {
 										if (prop=="width") {
 											stClass += " col-"+dev+"-"+stU;
 										} else{
@@ -939,7 +1037,7 @@
 							};
 
 							// Add the classes selected by the user
-							stClass = obCol.classes ? stClass + " " + obCol.classes.join(' ') : stClass;
+							stClass = obCol.classes ? stClass + " " + obCol.classes.join(" ") : stClass;
 
 							html += "<div class='"+stClass+"' id='el_"+stNewId+"' >";
 							if(obCol.elements){
@@ -957,7 +1055,9 @@
 				// lets build a content-element
 				if(obEl.type == "ce"){
 					var stNewId = (id=="" ? y : id+"_"+y);
-					var stClass = "ce"+stClassCust;
+					var stClass = "ce";
+					stClass = createFeMargin(obEl,stClass);
+
 					html += "<div class='"+stClass+"' id='el_"+stNewId+"' >";
 					html += "{{insert_content::"+obEl.id+"}}";
 					html += "</div>";
@@ -967,9 +1067,38 @@
 		}
 
 
+
+		function createBeMargin(el) {
+			// console.log(el.margin);
+			var stM = "";
+			for (var z = 0; z < arDevices.length; z++) {
+				var cmb = el.margin[arDevices[z]];
+				// console.log(cmb);
+				if (cmb!="") {
+					stM = cmb;
+				};
+				if (arDevices[z] == device) {
+					break;
+				};
+			};
+			// console.log(stM);
+			return stM;
+		}
+
+		function createFeMargin(el,cl) {
+			for (var dev in el.margin) {
+				var stV = el.margin[dev];
+				// console.log(stV);
+				if (stV !== "") {
+					cl += " mb-"+dev+"-"+stV;
+				}
+			}
+			return cl;
+		}
+
 		function drawGrix(){
-			var stHtmlBe = createBeHtmlCode(obData,level,'');
-			var stHtmlFe = createFeHtmlCode(obData,level,'');
+			var stHtmlBe = createBeHtmlCode(obData,0,'');
+			var stHtmlFe = createFeHtmlCode(obData,0,'');
 			var stJson = JSON.stringify(obData);
 
 			// show the grid in the backend
@@ -982,32 +1111,30 @@
 			var stJsonBeautyfied = JSON.stringify(obData,null, "\t");
 			stJsonBeautyfied = syntaxHighlight(stJsonBeautyfied);
 			$('.grix_beautyfied').html(stJsonBeautyfied);
+			$grix.removeClass('saved');
 
 			addUi();
 			// saveGrix(stJson,stHtmlFe);
 		}
 
 
-		function saveGrix(stJson,stHtmlFe){
-			// console.log(obCfg.articleId);
-			$('.grixJs').addClass('loading');
+		function saveGrix(){
+			$grix.addClass('saving');
+
 			$.ajax({
 				type: 'POST',
-				// url: '',
-				data: {
-					'action': 'saveGrix',
-					'id': obCfg.articleId,
-					'grixJs': stJson,
-					'grixHtml': escape(stHtmlFe),
-					'REQUEST_TOKEN': Contao.request_token
+				url: 'system/modules/gp_grix/ajax/ajax_save_all.php?t='+$.now(),
+				data: $("#grixBeForm").serialize(),
+				cache: false,		     	
+				success: function(data){
+					console.log('affectedRows: ',data);
+					$grix.removeClass('saving');
+					$grix.addClass('saved');
 				},
-			    dataType: 'json',
-				cache: false		     	
-	        }).done(function(msg) {
-				$('.grixJs').removeClass('loading');
-				$('.grixJs').addClass('saved');
-				// console.log(msg);
-			});	
+				error: function (xhr, textStatus, errorThrown) {
+					alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
+				}
+			});
 		}
 
 

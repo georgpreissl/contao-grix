@@ -13,13 +13,13 @@
 			self.bindEvents = function(){
 
 				// choose the units config for a row by click
-				$(".grix_lb_unitsconf").click(function(e) {
+				$('.grix_lb_unitsconf').click(function(e) {
 					$(this).addClass('selected').siblings().removeClass('selected');
 					e.preventDefault();
 				});
 
 				// choose the units config for a row by text input
-				$(".grix_lb_unitsconf_custom").change(function(e) {
+				$('.grix_lb_unitsconf_custom').change(function(e) {
 					console.log('change');
 					var val = $(this).val();
 					$(this).parent().addClass('selected').siblings().removeClass('selected');
@@ -72,7 +72,6 @@
 				});
 				
 				$('#grix_lb_apply').click(function(e){
-					console.log('apply');
 
 					// collect the selected unit-configs for a row
 					$(".grix_lb_uc.selected").each(function(i,el){
@@ -117,7 +116,8 @@
 
 
 				// get the clicked row/column
-				var obClicked = self.settings.obTarget.elements[self.settings.obTarget.pos];
+				// var obClicked = self.settings.obTarget.elements[self.settings.obTarget.pos];
+				var obClicked = self.settings.obTarget;
 
 				// Open the lightbox
 				$('body').addClass('grix_lb_active grix_lb_'+obClicked.type);
@@ -135,13 +135,12 @@
 					var arCols = obClicked.elements;
 					// console.log('arCols: ',arCols);
 
-					var obFirstColumn = arCols[0];
 					var arDevices = ['xs','sm','md','lg'];
 
 					// Mark the choosen units config as selected
 					$('.grix_lb_colmenu').each(function(index, el) {
 						var stUnCfg = obClicked.unitsConf[arDevices[index]];
-						console.log('stUnCfg: ',stUnCfg);
+						// console.log('stUnCfg: ',stUnCfg);
 						var $unConf = $(this).find('*[data-config="'+stUnCfg+'"]');
 						if ($unConf.length) {
 							$unConf.addClass('selected');
@@ -150,9 +149,6 @@
 						}
 					});
 				};
-
-
-
 
 			}
 
@@ -175,7 +171,7 @@
 
 
 				// Deselect everything
-				$(".grix_lb_unitsconf").removeClass('selected');
+				$('.grix_lb_unitsconf').removeClass('selected');
 				$('.grix_lb_class').removeClass('selected');
 				$('.grix_lb_ce').removeClass('selected');
 

@@ -189,7 +189,7 @@ class GrixBe extends \BackendModule
 		// if ($strData==NULL) {
 		// 	$strData = '';
 		// }
-// var_dump($strData);
+// var_dump($this->getReferer());
 		$this->loadLanguageFile('tl_grix');  
 
 
@@ -200,7 +200,8 @@ class GrixBe extends \BackendModule
 		$this->Template->grixHtmlFrontend = $grixHtmlFrontend;
 		$this->Template->ces = $arrCEsOverall;
 		$this->Template->action = ampersand(\Environment::get('request'));
-		$this->Template->href = $this->getReferer(true);
+		// $this->Template->href = $this->getReferer(true);
+		$this->Template->referer = 'javascript:history.go(-1)';
 		$this->Template->title = specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']);
 		$this->Template->lc = file_get_contents(TL_ROOT . '/system/modules/gp_grix/assets/img/lb-icons/lb-close.svg');
 
@@ -251,26 +252,31 @@ class GrixBe extends \BackendModule
 				return $arrAlias;
 			}
 
-			$objAlias = $this->Database->prepare("SELECT a.id, a.pid, a.title, a.inColumn, p.title AS parent FROM tl_article a LEFT JOIN tl_page p ON p.id=a.pid WHERE a.pid IN(". implode(',', array_map('intval', array_unique($arrPids))) .") ORDER BY parent, a.sorting")
+			$objArticles = $this->Database->prepare("SELECT a.id, a.pid, a.title, a.inColumn, p.title AS parent FROM tl_article a LEFT JOIN tl_page p ON p.id=a.pid WHERE a.pid IN(". implode(',', array_map('intval', array_unique($arrPids))) .") ORDER BY parent, a.sorting")
 									   ->execute();
 		}
 		else
 		{
-			$objAlias = $this->Database->prepare("SELECT a.id, a.pid, a.title, a.inColumn, p.title AS parent FROM tl_article a LEFT JOIN tl_page p ON p.id=a.pid ORDER BY parent, a.sorting")
+
+			$objArticles = $this->Database->prepare("SELECT a.id, a.pid, a.title, a.inColumn, p.title AS parent FROM tl_article a LEFT JOIN tl_page p ON p.id=a.pid ORDER BY parent, a.sorting")
 									   ->execute();
 		}
 
-		if ($objAlias->numRows)
+		if ($objArticles->numRows)
 		{
 			$this->loadLanguageFile('tl_article');
 
-			while ($objAlias->next())
+			while ($objArticles->next())
 			{
-				$key = $objAlias->parent . ' (ID ' . $objAlias->pid . ')';
-				$arrAlias[$key][$objAlias->id] = $objAlias->title . ' (' . ($GLOBALS['TL_LANG']['tl_article'][$objAlias->inColumn] ?: $objAlias->inColumn) . ', ID ' . $objAlias->id . ')';
+
+				$result = $this->Database->prepare("SELECT * FROM tl_content WHERE pid=?")->execute($objArticles->id);
+				$nrCEs =  $result->numRows;
+				if ($nrCEs != 0) {
+					$key = $objArticles->parent . ' (ID ' . $objArticles->pid . ')';
+					$arrAlias[$key][$objArticles->id] = $objArticles->title . ' (' . ($GLOBALS['TL_LANG']['tl_article'][$objArticles->inColumn] ?: $objArticles->inColumn) . ', ID ' . $objArticles->id . ')';
+				}
 			}
 		}
-
 		return $arrAlias;
 	}
 

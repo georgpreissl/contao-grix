@@ -2,6 +2,8 @@
 	$(document).ready(function(){
 
 
+
+
 		// the new CE should be saved
 		// Let's paste it into the grix JSON before
 		$('#saveNclose').click(function(e) {
@@ -20,39 +22,40 @@
 		// load the grix js for the current article and insert the CE
 		function loadGrixJs(articleId,phId,ceId) {
 			$.ajax({
+				type: 'POST',
 				url: 'system/modules/gp_grix/ajax/ajax_load.php',
 				data: {
-					articleId: articleId
+					articleId: articleId,
+					'REQUEST_TOKEN': Contao.request_token
 				},
+				cache: false,
 				success: function(data){
-
+					// console.log('data: '+data);
+					
 					// Convert the JSON to js
 					var obGrixJs = JSON.parse(data);
 
 					// Find the place where the element is to be inserted
 					var arId = phId.split("_");
 					var obP = {
-						elements: obGrixJs,
-						pos: parseInt(arId[0])
+						elements: obGrixJs
 					};
+					var nrIx = parseInt(arId[0]);
+
 					for (var i = 0; i < arId.length-1; i++) {
 						obP = obP.elements[arId[i]];
-						obP.pos = parseInt(arId[i+1]);
+						nrIx = parseInt(arId[i+1]);
 					};
 
-					// Create the new element
-					var newCE = {
-						type: "ce",
-						id: ceId
-					};
+					var obCE = new GrixCE();
+					obCE.id = ceId;
 
-					if (obP.elements[obP.pos].elements) {
-						// Insert the element
-						obP.elements[obP.pos].elements.push(newCE);
-						
+					if (obP.elements[nrIx].elements) {
+						// insert the element into the clicked column
+						obP.elements[nrIx].elements.push(obCE);
 					} else{
-						obP.elements.splice(obP.pos+1, 0, newCE);
-						// console.log(obP.elements[obP.pos]);
+						// insert the element after the clicked CE 
+						obP.elements.splice(nrIx+1, 0, obCE);
 					};
 
 					// Convert back to JSON and save it
@@ -70,11 +73,13 @@
 		// save the grix js of the current article
 		function saveGrixJs(grixjs,articleId,ceId) {
 			$.ajax({
+				type: 'POST',
 				url: 'system/modules/gp_grix/ajax/ajax_insert.php',
 				data: {
 					grixjs: grixjs,
 					articleId: articleId,
-					ceId: ceId
+					ceId: ceId,
+					'REQUEST_TOKEN': Contao.request_token
 				},
 				success: function(msg){
 					// console.log(msg);
@@ -97,10 +102,8 @@
 		        sURLVariables = sPageURL.split('&'),
 		        sParameterName,
 		        i;
-
 		    for (i = 0; i < sURLVariables.length; i++) {
 		        sParameterName = sURLVariables[i].split('=');
-
 		        if (sParameterName[0] === sParam) {
 		            return sParameterName[1] === undefined ? true : sParameterName[1];
 		        }

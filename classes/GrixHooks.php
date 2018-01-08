@@ -88,20 +88,62 @@ class GrixHooks extends \Backend {
 
     public function grixPreAction($strAction)
     {
-      
     }
+
+
+
 
     public function grixPostAction($strAction, $dc)
     {
         	// $dc->table  ... is 'tl_article'!
         	// $dc->id     ... is the id of the current edited article
  
-		if ($strAction == 'jobo') {
+		if ($strAction == 'updateUsedCEs') 
+		{
+			// echo 'asdf';
+			// echo \Environment::get('isAjaxRequest');
+			$articleId = \Input::post('articleId');
+			$CEsToDelete = \Input::post('ces');
+
+			$result = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($articleId);
+			
+			$arrUsedCEs = unserialize($result->CEsUsed);
+
+			if (!is_array($arrUsedCEs)) {
+				$arrUsedCEs = array();
+			}
+
+			$newUsedCEs = array();
+			foreach ($arrUsedCEs as $key => $id) {
+				if (!in_array($id, $CEsToDelete)) {
+				    $newUsedCEs[] = $id;
+				}
+			}
+
+
+$data = serialize($newUsedCEs);
+$resultFinal = $this->Database->prepare("UPDATE tl_article SET CEsUsed=? WHERE id=?")->execute($data, $articleId);
+
+
+
+			echo json_encode(array 
+			(
+			    'usedCEs'      => $arrUsedCEs,
+			    'CEsToDelete'          => $CEsToDelete,
+			    'newUsedCEs'          => $newUsedCEs,
+			    'affectedRows'=> $resultFinal->affectedRows,
+			    'token'        => REQUEST_TOKEN 
+			));  
+            exit; 			
+		}
+
+
+		if ($strAction == 'jobo') 
+		{
 			// echo 'asdf';
 			// echo \Environment::get('isAjaxRequest');
 
-			$objRows = $this->Database->prepare("UPDATE tl_article SET title = ? WHERE id=?")
-								  ->execute('asdfl',5);
+			$objRows = $this->Database->prepare("UPDATE tl_article SET title = ? WHERE id=?")->execute('asdfl',5);
 
 			echo json_encode(array 
 			( 
@@ -113,11 +155,37 @@ class GrixHooks extends \Backend {
 		}
 
 
+		// funktioniert NICHT!!!
+		// speichert im NULL in grixJs !!!
+        if ($strAction == 'saveBeforeAddCE')
+        {
+        	$articleId = \Input::post('articleId');
+        	// $grixJs = \Input::post('grixJs');
+$grixjs = $_POST['grixJs'];
+
+
+// $grixJs = substr($grixJs, 1, -1);
+// $grixJs = "'".$grixJs."'";
+
+			$objResult = $this->Database->prepare("UPDATE tl_article SET grixJs=? WHERE id=?")->execute($grixjs, $articleId);
+// $objResult = \Database::getInstance()->prepare("UPDATE tl_article SET grixJs=? WHERE id=?")->execute($grixjs, $articleId);
+
+
+			echo json_encode(array 
+			( 
+			    'content'    => 'done!' ,
+			    'device'=> $objResult->affectedRows,
+			    'token'        => REQUEST_TOKEN 
+			));  
+            exit; 
+		}
+
+
         if ($strAction == 'saveGrix')
         {
         	$id = \Input::post('id');
         	$grixJs = \Input::post('grixJs');
-        	$grixHtml = \Input::post('grixHtml');
+        	$grixHtml = \Input::post('grixHtmlFrontend');
 
           	$this->import('Database');
 			$this->Database->prepare("UPDATE tl_article SET grixHtmlFrontend=? WHERE id=?")->execute($grixHtml, $id);
@@ -172,6 +240,7 @@ class GrixHooks extends \Backend {
 	    if ($strName == 'tl_layout')
 	    {
 	      array_push($GLOBALS['TL_DCA']['tl_layout']['fields']['framework']['options'], '../../../system/modules/gp_grix/assets/css/bootstrap.css');
+	      array_push($GLOBALS['TL_DCA']['tl_layout']['fields']['framework']['options'], '../../../system/modules/gp_grix/assets/css/margin-bottom.css');
 	    }
 	}
 
