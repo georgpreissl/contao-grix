@@ -25,7 +25,7 @@ class GrixBe extends \BackendModule
 	public function compile()
 	{
 
-
+		$this->loadLanguageFile('tl_grix'); 
 
 		/**
 		 * CSS & Javascripts
@@ -55,7 +55,7 @@ class GrixBe extends \BackendModule
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grixLightbox.js';
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grix.js';
 			$GLOBALS['TL_CSS'][] = 'system/modules/gp_grix/assets/css/grix_backend.css';
-			$GLOBALS["TL_CSS"][] = "system/modules/gp_grix/assets/css/bootstrap_backend.css";
+			$GLOBALS["TL_CSS"][] = 'system/modules/gp_grix/assets/css/bootstrap_backend.css';
 		}
 
 
@@ -65,41 +65,11 @@ class GrixBe extends \BackendModule
 		$id = \Input::get('id');
 
 
-		// if grix is activated/clicked in the backend-module-pannel
-		// under construticon!!!
+		// if grix is activated in the backend-module-pannel
 		if(!$id)
 		{
-			$arrPages = array();
-			// get all
-			$objPages = \PageModel::findAll();
-			// var_dump($objPages);
-
-			if (null !== $objPages)  {
-				while($objPages->next()) {
-					
-					$objPage = new \stdClass();
-					$objPage->title = $objPages->title;
-					$objPage->articles = array();
-					$objArticles = \ArticleModel::findBy('pid',$objPages->id);
-
-					if (null !== $objArticles) {
-						$arrArticles = array();
-						while($objArticles->next()) {
-							$objArticle = new \stdClass();
-							$objArticle->title = $objArticles->title;
-						    $objPage->articles[] = $objArticle;
-						}
-					}
-
-				    $arrPages[] = $objPage;
-				}
-			}
-
-			$objTemplate = new \BackendTemplate('mod_grix_articles');
+			$objTemplate = new \BackendTemplate('mod_grix_help');
 			$this->Template = $objTemplate;
-			$this->Template->m = 'hello';
-			$this->Template->pages = $arrPages;
-
 			return $this->Template->parse();;		
 		}
 
@@ -132,10 +102,12 @@ class GrixBe extends \BackendModule
 		// get all the CEs of this article created by contao directly
 		$objCEs = \ContentModel::findPublishedByPidAndTable($id,'tl_article');
         $arrCEs = array();
-	    if ($objCEs !== null) {
+	    if ($objCEs !== null)
+	    {
 	        $intCEsNr = $objCEs->count();
 
-	        while ($objCEs->next()) {
+	        while ($objCEs->next()) 
+	        {
 	            $objCE = $objCEs->current();
 	            $arrCEs[] = $objCE->id;
 	        }
@@ -175,9 +147,10 @@ class GrixBe extends \BackendModule
 		 	while ($objClasses->next())
 			{
 				$arrCl = array();
-				$arrCl['name'] = $objClasses->styleDesignation;
+				$arrCl['name'] = $objClasses->styleTitle;
 				$arrCl['id'] = $objClasses->id;
 				$arrCl['alias'] = $objClasses->cssClasses;
+				$arrCl['description'] = $objClasses->styleDescription;
 				$arrClasses[] = $arrCl;
 			}
 		}
@@ -186,13 +159,8 @@ class GrixBe extends \BackendModule
 		// get the grixJs of this article
 		$result = $this->Database->prepare("SELECT grixJs FROM tl_article WHERE id=?")->execute($id);
 		$strData = $result->grixJs ? : '';
-		// if ($strData==NULL) {
-		// 	$strData = '';
-		// }
-// var_dump($this->getReferer());
-		$this->loadLanguageFile('tl_grix');  
-
-
+		
+		 
 
 
 		$this->Template->id = $id;
@@ -213,7 +181,7 @@ class GrixBe extends \BackendModule
 		$this->Template->button = $GLOBALS['TL_LANG']['MSC']['backBT'];
 		$this->Template->lbChooseCE = specialchars($GLOBALS['TL_LANG']['tl_grix']['lbChooseCE'][0]);		
 
-		$this->Template->allArticles = $this->getArticleAlias();
+		$this->Template->allArticles = $this->getArticleAlias($id);
 		$this->Template->classes = $arrClasses;
 
 		// for debugging
@@ -232,7 +200,7 @@ class GrixBe extends \BackendModule
 	 * @param object
 	 * @return array
 	 */
-	public function getArticleAlias()
+	public function getArticleAlias($id)
 	{
 		$arrPids = array();
 		$arrAlias = array();
@@ -268,15 +236,30 @@ class GrixBe extends \BackendModule
 
 			while ($objArticles->next())
 			{
+					$result = $this->Database->prepare("SELECT * FROM tl_content WHERE pid=?")->execute($objArticles->id);
+					if ($result->numRows) 
+					{
+						$key = $objArticles->parent . ' (ID ' . $objArticles->pid . ')';
+						if ($id == $objArticles->id ) 
+						{
+							// show the current edited article as first option in the dropdown
+							$arrCurrent = array();
+							$arrCurrent[$key][$objArticles->id] = $objArticles->title . ' (' . ($GLOBALS['TL_LANG']['tl_article'][$objArticles->inColumn] ?: $objArticles->inColumn) . ', ID ' . $objArticles->id . ')';
+							
 
-				$result = $this->Database->prepare("SELECT * FROM tl_content WHERE pid=?")->execute($objArticles->id);
-				$nrCEs =  $result->numRows;
-				if ($nrCEs != 0) {
-					$key = $objArticles->parent . ' (ID ' . $objArticles->pid . ')';
-					$arrAlias[$key][$objArticles->id] = $objArticles->title . ' (' . ($GLOBALS['TL_LANG']['tl_article'][$objArticles->inColumn] ?: $objArticles->inColumn) . ', ID ' . $objArticles->id . ')';
-				}
+						} else {
+							$arrAlias[$key][$objArticles->id] = $objArticles->title . ' (' . ($GLOBALS['TL_LANG']['tl_article'][$objArticles->inColumn] ?: $objArticles->inColumn) . ', ID ' . $objArticles->id . ')';
+
+						}
+					}
+			}
+
+			if (isset($arrCurrent)) 
+			{
+				$arrAlias = array_merge($arrCurrent, $arrAlias);
 			}
 		}
+		// printf('<pre>%s</pre>', print_r($arrAlias,true));
 		return $arrAlias;
 	}
 

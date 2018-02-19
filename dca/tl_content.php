@@ -1,11 +1,11 @@
 <?php 
 
 
-// when the CE editor is loaded
+// When the CE editor is loaded
 $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('gp_grix','addGrixJs');
 
 
-// when the CE is saved/submitted
+// When the CE is saved/submitted
 $GLOBALS['TL_DCA']['tl_content']['config']['onsubmit_callback'][] = array('gp_grix','grixOnCeSubmit');
 
 

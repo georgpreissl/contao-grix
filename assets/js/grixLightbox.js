@@ -32,7 +32,7 @@
 				// import CE's from other articles via dropdown menu
 				$(".grix_lb_articles select").change(function(){
 				    var nrArtId = $(this).val();
-
+				    console.log('nrArtId: ',nrArtId);
 				    // php action is defined in GrixHooks.php
 					$.ajax({
 						type: 'POST',
@@ -74,7 +74,7 @@
 				$('#grix_lb_apply').click(function(e){
 
 					// collect the selected unit-configs for a row
-					$(".grix_lb_uc.selected").each(function(i,el){
+					$('.grix_lb_uc.selected').each(function(i,el){
 						self.obCfg.unitsConf[$(el).data('device')] = $(el).data('config');
 					});
 
@@ -92,8 +92,12 @@
 					self.obCfg.arClasses = self.arCLchecked;
 					self.obCfg.arCEs = self.arCEchecked;
 
-					// call the callback function
-					apply();
+					// first call the callback function
+					self.settings.callBackFunction(self.settings.obTarget,self.obCfg);
+
+					// afterwards close the lightbox
+					self.close();
+
 				});
 
 			}
@@ -111,9 +115,6 @@
 				// Start without a selection
 				self.arCEchecked = [];
 				self.arCLchecked = [];
-
-
-
 
 				// get the clicked row/column
 				// var obClicked = self.settings.obTarget.elements[self.settings.obTarget.pos];
@@ -153,14 +154,6 @@
 			}
 
 
-			// Close the lightbox window and apply
-
-			function apply() {
-				self.settings.callBackFunction(self.settings.obTarget,self.obCfg);
-				self.close();
-			}
-
-
 			// Close the lightbox window
 
 			self.close = function(){
@@ -169,13 +162,12 @@
 					unitsConf:{}
 				};
 
-
 				// Deselect everything
 				$('.grix_lb_unitsconf').removeClass('selected');
 				$('.grix_lb_class').removeClass('selected');
 				$('.grix_lb_ce').removeClass('selected');
 
-				$(".grix_lb_unitsconf_custom").each(function(index, el) {
+				$('.grix_lb_unitsconf_custom').each(function(index, el) {
 					$(this).val('');
 				});
 

@@ -34,15 +34,15 @@ $GLOBALS['TL_DCA']['tl_grix_css'] = array
         'sorting' => array
         (
             'mode'                    => 11,
-            'fields'                  => array('styleDesignation'),
+            'fields'                  => array('styleTitle'),
             'panelLayout'             => 'filter;search,limit'
         ),
         'label' => array
         (
-            'fields'                  => array('styleDesignation', 'cssClasses'),
+            'fields'                  => array('styleTitle', 'cssClasses'),
             'showColumns'             => true,
             'label_callback' => function ($row, $label, DataContainer $dc, $args) {
-                $args[0] = $row['styleDesignation'];
+                $args[0] = $row['styleTitle'];
 
                 return $args;
             }
@@ -89,7 +89,7 @@ $GLOBALS['TL_DCA']['tl_grix_css'] = array
     // Palettes
     'palettes' => array
     (
-        'default' => '{style_legend},styleDesignation;{css_legend},cssClasses'
+        'default' => '{style_legend},styleTitle;{css_legend},cssClasses;{description_legend},styleDescription'
     ),
     // Fields
     'fields'   => array
@@ -102,9 +102,9 @@ $GLOBALS['TL_DCA']['tl_grix_css'] = array
         (
             'sql'                     => "int(10) unsigned NOT NULL default '0'"
         ),
-        'styleDesignation' => array
+        'styleTitle' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_grix_css']['styleDesignation'],
+            'label'                   => &$GLOBALS['TL_LANG']['tl_grix_css']['styleTitle'],
             'exclude'                 => true,
             'search'                  => true,
             'inputType'               => 'text',
@@ -117,6 +117,15 @@ $GLOBALS['TL_DCA']['tl_grix_css'] = array
             'exclude'                 => true,
             'inputType'               => 'text',
             'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'rgxp'=>'alphanumeric', 'tl_class'=>'w50'),
+            'sql'                     => "varchar(255) NOT NULL default ''"
+        ),
+        'styleDescription' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_grix_css']['styleDescription'],
+            'exclude'                 => true,
+            'search'                  => true,
+            'inputType'               => 'text',
+            'eval'                    => array('maxlength' => 255, 'tl_class' => 'w50'),
             'sql'                     => "varchar(255) NOT NULL default ''"
         )
     )

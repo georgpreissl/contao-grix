@@ -18,13 +18,28 @@ $GLOBALS['TL_LANG']['tl_grix']['deviceInfoSm'] = '≥ 768px (Small devices)';
 $GLOBALS['TL_LANG']['tl_grix']['deviceInfoMd'] = '≥ 992px (Medium devices)';
 $GLOBALS['TL_LANG']['tl_grix']['deviceInfoLg'] = '≥ 1200px (Large devices)';
 
+$GLOBALS['TL_LANG']['tl_grix']['bt_label_devices'] = 'Ausgabegerät';
+$GLOBALS['TL_LANG']['tl_grix']['bt_label_width'] = 'Breite';
+$GLOBALS['TL_LANG']['tl_grix']['bt_label_margin'] = 'Abstand';
+$GLOBALS['TL_LANG']['tl_grix']['bt_margin_minus'] = 'Unteren Abstand des ausgewählten Elements verringern';
+$GLOBALS['TL_LANG']['tl_grix']['bt_margin_plus'] = 'Unteren Abstand des ausgewählten Elements erhöhen';
+$GLOBALS['TL_LANG']['tl_grix']['bt_duplicate'] = 'Ausgewähltes Element duplizieren';
+$GLOBALS['TL_LANG']['tl_grix']['bt_deselect'] = 'Auswahl aufheben';
+$GLOBALS['TL_LANG']['tl_grix']['bt_back'] = 'Zurück zur vorherigen Seite';
+
+
 /**
  * Lightbox 
  */
-$GLOBALS['TL_LANG']['tl_grix']['lbChooseArticle'] = 'Artikel auswählen';
+$GLOBALS['TL_LANG']['tl_grix']['lbChooseArticle'] = 'Artikel auswählen:';
 $GLOBALS['TL_LANG']['tl_grix']['lbChooseCE'] = 'Inhaltselemente importieren';
 $GLOBALS['TL_LANG']['tl_grix']['lbChooseClasses'] = 'CSS-Klassen auswählen';
 $GLOBALS['TL_LANG']['tl_grix']['lbCancel'] = 'Abbrechen';
+
+
+$GLOBALS['TL_LANG']['tl_grix']['helpInstallUsage'] = 'Installation und Verwendung';
+$GLOBALS['TL_LANG']['tl_grix']['help_nestedColumns'] = 'Verschachtelte Raster erstellen';
+
 
 
 ?>

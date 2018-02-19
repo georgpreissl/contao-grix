@@ -39,7 +39,7 @@ $GLOBALS['TL_DCA']['tl_article']['fields']['grixHtmlFrontend'] = array
 $GLOBALS['TL_DCA']['tl_article']['palettes']['default'] .= ',grixToggle';
 
 
-// Decides whether the content elements of the article will be output via the module grix...
+// Decides whether the content elements of the article will be output via the module grix
 $GLOBALS['TL_DCA']['tl_article']['fields']['grixToggle'] = array
 (
 	'label'         => &$GLOBALS['TL_LANG']['tl_article']['grixToggle'],

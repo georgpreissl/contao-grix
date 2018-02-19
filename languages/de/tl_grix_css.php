@@ -5,21 +5,16 @@
 /**
  * Legends
  */
-$GLOBALS['TL_LANG']['tl_grix_css']['style_legend'] = 'Stil';
+$GLOBALS['TL_LANG']['tl_grix_css']['style_legend'] = 'Titel';
 $GLOBALS['TL_LANG']['tl_grix_css']['css_legend'] = 'CSS';
-$GLOBALS['TL_LANG']['tl_grix_css']['permissions_legend'] = 'Berechtigungen';
+$GLOBALS['TL_LANG']['tl_grix_css']['description_legend'] = 'Tooltip-Infos';
 
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_grix_css']['styleDesignation'] = array('Titel der CSS-Klasse', 'Bitte geben Sie den Titel der CSS-Klasse ein.');
-$GLOBALS['TL_LANG']['tl_grix_css']['cssClasses'] = array('CSS-Klasse', 'Bitte geben Sie eine oder mehrere CSS-Klassen mit jeweils einem Leerzeichen getrennt ein.');
-$GLOBALS['TL_LANG']['tl_grix_css']['disableInArticle'] = array('In Artikeln deaktivieren', 'Bitte wählen Sie dieses Feld aus, um den Stil in den Artikeln zu deaktivieren.');
-$GLOBALS['TL_LANG']['tl_grix_css']['disableInContent'] = array('In Content Elementen deaktivieren', 'Bitte wählen Sie dieses Feld aus, um den Stil in den Content Elementen zu deaktivieren.');
-$GLOBALS['TL_LANG']['tl_grix_css']['disableInLayout'] = array('In Layout deaktivieren', 'Bitte wählen Sie dieses Feld aus, um den Stil in den Layouts zu deaktivieren.');
-$GLOBALS['TL_LANG']['tl_grix_css']['disableInModule'] = array('In Modulen deaktivieren', 'Bitte wählen Sie dieses Feld aus, um den Stil in den Modulen zu deaktivieren.');
-$GLOBALS['TL_LANG']['tl_grix_css']['disableInNews'] = array('In Neuigkeiten deaktivieren', 'Bitte wählen Sie dieses Feld aus, um den Stil in den Neuigkeiten zu deaktivieren.');
-$GLOBALS['TL_LANG']['tl_grix_css']['disableInPage'] = array('In Seiten deaktivieren', 'Bitte wählen Sie dieses Feld aus, um den Stil in den Seiten zu deaktivieren.');
+$GLOBALS['TL_LANG']['tl_grix_css']['styleTitle'] = array('Titel des CSS-Stils', 'Bitte geben Sie den Titel der CSS-Klasse ein.');
+$GLOBALS['TL_LANG']['tl_grix_css']['cssClasses'] = array('CSS-Klassen', 'Bitte geben Sie eine oder mehrere CSS-Klassen mit jeweils einem Leerzeichen getrennt ein.');
+$GLOBALS['TL_LANG']['tl_grix_css']['styleDescription'] = array('Beschreibung des CSS-Stils', 'Bitte geben Sie eine kurze Beschreibung des CSS-Stils ein.');
 
 
 /**

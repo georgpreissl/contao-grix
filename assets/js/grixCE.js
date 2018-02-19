@@ -23,10 +23,11 @@
 		function loadGrixJs(articleId,phId,ceId) {
 			$.ajax({
 				type: 'POST',
-				url: 'system/modules/gp_grix/ajax/ajax_load.php',
+				url: 'system/modules/gp_grix/ajax/ajax.php',
 				data: {
 					articleId: articleId,
-					'REQUEST_TOKEN': Contao.request_token
+					grixAction: 'load',
+					REQUEST_TOKEN: Contao.request_token
 				},
 				cache: false,
 				success: function(data){
@@ -74,12 +75,13 @@
 		function saveGrixJs(grixjs,articleId,ceId) {
 			$.ajax({
 				type: 'POST',
-				url: 'system/modules/gp_grix/ajax/ajax_insert.php',
+				url: 'system/modules/gp_grix/ajax/ajax.php',
 				data: {
-					grixjs: grixjs,
+					grixJs: grixjs,
 					articleId: articleId,
 					ceId: ceId,
-					'REQUEST_TOKEN': Contao.request_token
+					grixAction: 'insert',
+					REQUEST_TOKEN: Contao.request_token
 				},
 				success: function(msg){
 					// console.log(msg);

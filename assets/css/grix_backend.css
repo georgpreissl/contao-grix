@@ -26,7 +26,7 @@
 }
 .grix_debug_article {
 	padding: 2rem;
-	display: block;
+	display: none;
 }
 .grixJs {
 	margin: 1em 0 0;
@@ -38,7 +38,7 @@
 	white-space: pre;
 	font-family: monospace;
 	tab-size: 3rem;
-	display: block;
+	display: none;
 }
 .grix_beautyfied .key {
 	color: #2B2B2B;
@@ -900,6 +900,9 @@
 	/* border: 1px solid red; */
 	/* overflow-y: scroll; */
 }
+.grix_lb h1 {
+	margin:0 0 1rem 0;
+}
 .grix_lb_row .grix_lb_overview {
 	display: none;
 }
@@ -1076,6 +1079,24 @@
 }
 .grix_lb_articles {
 	margin-bottom: 1rem;
+
+}
+.grix_lb_articles > span {
+	padding-top: .3rem;
+	padding-right: .3rem;
+	display: inline-block;
+}
+.grix_lb_articles > select {
+	width: 10rem;
+	
+}
+.grix_lb_articles > select option {
+	width: 10rem;
+	
+}
+.grix_lb_articles .styled_select {
+	display: inline-block;
+	width: 10rem;
 }
 .grix_lb_overlay {
 	position: absolute;
@@ -1098,6 +1119,12 @@
 	border: 1px solid gray;
 	display: inline-block;
 	width: 12rem;
+}
+.grix_help {
+	padding: 2rem;
+}
+.grix_help_video {
+	margin-bottom: 2rem;
 }
 @media (min-width: 1500px) {
 	.grix_lb_ce {

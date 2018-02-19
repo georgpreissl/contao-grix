@@ -13,20 +13,16 @@
 		var $body = $('body');
 
 
-		function scanForCEs(ob){
-			var arScanCEs = [];
-			scan(ob, arScanCEs);
-			return arScanCEs;
-		}
 
-		function scan(obj,ar){
+
+		function scanForCEs(obj,ar){
 			if (obj.type == 'ce') ar.push(obj.id);
 			if (obj.elements) {
 				for (var i = 0; i < obj.elements.length; i++) {
-					var obChild = obj.elements[i];
-					scan(obChild,ar);
+					ar = scanForCEs(obj.elements[i],ar);
 				};
 			};
+			return ar;
 		};
 
 
@@ -163,8 +159,8 @@
 
 
 			$('.grix_save').click(function(e) {
-				saveGrix();
-				e.preventDefault();
+				// saveGrix();
+				// e.preventDefault();
 			});
 
 		}
@@ -249,22 +245,22 @@
 			var obP = getTarget(el,1);
 			var obT = getTarget(el);
 
-			var arCEsFound = scanForCEs(obT);
-			// console.log(arCEsFound);
+			var arCEsFound = scanForCEs(obT,[]);
+			console.log('arCEsFound: ',arCEsFound);
 
 			obP.elements.splice(getIndex(el),1);
 			$.ajax({
 				type: 'POST',
 				data: {
-					'action':'updateUsedCEs',
 					'ces': arCEsFound,
 					'articleId': obCfg.articleId,
+					'action':'updateUsedCEs',
 					'REQUEST_TOKEN':Contao.request_token
 				},
 				dataType: 'json',
 				cache: false		     	
-
 			}).done(function(obj) {
+				// console.log(obj);
 				console.log('UsedCEs: ',obj.usedCEs);
 				console.log('CEsToDelete: ',obj.CEsToDelete);
 				console.log('newUsedCEs: ',obj.newUsedCEs);
@@ -347,14 +343,16 @@
 
 			// Serialize the data in the form
 			var stFormData = $("#grixBeForm").serialize();
-
+			stFormData += '&grixAction=save';
+			// console.log(stFormData);
+			// return;
 			// Save the current status
 			$.ajax({
 				type: 'POST',
-				url: 'system/modules/gp_grix/ajax/ajax_save.php',
+				url: 'system/modules/gp_grix/ajax/ajax.php',
 				data: stFormData,
 				success: function(data){
-					// console.log(data);
+					console.log(data);
 					// Status has been saved, now create the new CE
 					window.location.href = 'contao/main.php?do=article&table=tl_content&act=create&mode=2&pid='+obCfg.articleId+'&id='+obCfg.articleId+'&grix=create&rt='+obCfg.requTok+'&phid='+stPhId;
 				},
@@ -377,15 +375,15 @@
 		}
 
 		function deleteCol(el){
-			
 			var obRow = getTarget(el,1);
 			var obCol = getTarget(el);
+			// console.log(obRow.elements.length);
 
 			// dont delete the last column
 			if (obRow.elements.length == 1) return false;
 
-			var arCEsFound = scanForCEs(obCol);
-			// console.log(arCEsFound);
+			var arCEsFound = scanForCEs(obCol,[]);
+			console.log('arCEsFound: ',arCEsFound);
 
 			var arCols = obRow.elements;
 			// console.log('arCols:',arCols);
@@ -420,30 +418,33 @@
 					arUnitsConf.push(obCol.width[device]);
 				}
 
-				obRow.unitsConf[device] = arUnitsConf.join('-');
 				// console.log('stUnitsConf:',stUnitsConf);
+				obRow.unitsConf[device] = arUnitsConf.join('-');
 			} else {
 				obRow.unitsConf[device] = arCols[0].width[device];
 
 			}
-
-			$.ajax({
-				type: 'POST',
-				data: {
-					'action':'updateUsedCEs',
-					'ces': arCEsFound,
-					'articleId': obCfg.articleId,
-					'REQUEST_TOKEN':Contao.request_token
-				},
-				dataType: 'json',
-				cache: false		     	
-			}).done(function(obj) {
-				console.log('UsedCEs: ',obj.usedCEs);
-				console.log('CEsToDelete: ',obj.CEsToDelete);
-				console.log('newUsedCEs: ',obj.newUsedCEs);
-				console.log('affectedRows: ',obj.affectedRows);
+			if (arCEsFound.length > 0) {
+				$.ajax({
+					type: 'POST',
+					data: {
+						'action':'updateUsedCEs',
+						'ces': arCEsFound,
+						'articleId': obCfg.articleId,
+						'REQUEST_TOKEN':Contao.request_token
+					},
+					dataType: 'json',
+					cache: false		     	
+				}).done(function(obj) {
+					console.log('UsedCEs: ',obj.usedCEs);
+					console.log('CEsToDelete: ',obj.CEsToDelete);
+					console.log('newUsedCEs: ',obj.newUsedCEs);
+					console.log('affectedRows: ',obj.affectedRows);
+					drawGrix();
+				});
+			} else {
 				drawGrix();
-			});
+			}
 
 		}
 
@@ -456,8 +457,8 @@
 
 			$.ajax({
 				method: 'post',
-				url: 'system/modules/gp_grix/ajax/ajax_save.php',
-				data: $("#grixBeForm").serialize(),
+				url: 'system/modules/gp_grix/ajax/ajax.php',
+				data: $("#grixBeForm").serialize()+ '&grixAction=save',
 				success: function(data){
 					// current status has been saved, now edit the CE
 					window.location.href= 'contao/main.php?do=article&table=tl_content&act=edit&id='+getTarget(el).id+'&grix=edit&pid='+obCfg.articleId+'&rt='+obCfg.requTok;
@@ -483,7 +484,7 @@
 					'action':'updateUsedCEs',
 					'ces': [obEl.id],
 					'articleId': obCfg.articleId,
-					'REQUEST_TOKEN':Contao.request_token
+					'REQUEST_TOKEN': Contao.request_token
 				},
 				dataType: 'json',
 				cache: false		     	
@@ -498,54 +499,19 @@
 
 		}
 
-
-
-function updateUsedCEs() {
-	var id = el.data('id');
-	var obT = getTarget(id);
-	var arCEsFound = scanForCEs(obT);
-	// console.log(arCEsFound);
-
-	var obP = getTarget(id,1);
-	obP.elements.splice(getIndex(id),1);
-
-
-	$.ajax({
-		type: 'POST',
-		data: {
-			'action':'updateUsedCEs',
-			'ces': arCEsFound,
-			'articleId': obCfg.articleId,
-			'REQUEST_TOKEN':Contao.request_token
-		},
-		dataType: 'json',
-		cache: false		     	
-
-	}).done(function(obj) {
-		console.log('UsedCEs: ',obj.usedCEs);
-		console.log('CEsToDelete: ',obj.CEsToDelete);
-		console.log('newUsedCEs: ',obj.newUsedCEs);
-		console.log('affectedRows: ',obj.affectedRows);
-
-
-		drawGrix();
-
-
-	});	
-}
-
-
 		function deleteElement(el){
 			// delete the element permanently
 			var obCol = getTarget(el,1);
 			var obCE = getTarget(el);
 			// console.log('dle');
 			$.ajax({
-				method: 'get',
-				url: 'system/modules/gp_grix/ajax/ajax_delete.php',
+				type: 'POST',
+				url: 'system/modules/gp_grix/ajax/ajax.php',
 				data: {
-					id: obCE.id,
+					ceId: obCE.id,
 					articleId: obCfg.articleId,
+					grixAction: 'delete',
+					'REQUEST_TOKEN':Contao.request_token
 				},
 				success: function(data){
 					// console.log("deleted!");
@@ -574,9 +540,7 @@ function updateUsedCEs() {
 
 				for (var i = 0; i < arCols.length; i++) {
 					var obCol = arCols[i];
-					// console.log(obCol);
-					// obCol.width[dev] = obCfgLb.unitsConf[dev];
-					if (arConf[i]==undefined) {
+					if (arConf[i] == undefined) {
 						obCol.width[dev] = arConf[0];
 					} else {
 						obCol.width[dev] = arConf[i];
@@ -584,7 +548,6 @@ function updateUsedCEs() {
 				};
 			}
 			drawGrix();
-			// console.log(obRow.unitsConf);
 		}
 
 		function adjustCol(obCol, obLbCfg){
@@ -614,11 +577,13 @@ function updateUsedCEs() {
 
 				// update the CEsUsed-field of the article
 				$.ajax({
-					type: 'GET',
-					url: 'system/modules/gp_grix/ajax/ajax_insertce.php',
+					type: 'POST',
+					url: 'system/modules/gp_grix/ajax/ajax.php',
 					data: {
 						articleId: obCfg.articleId,
-						arCEs: JSON.stringify(obLbCfg.arCEs)
+						arCEs: JSON.stringify(obLbCfg.arCEs),
+						grixAction: 'insertce',
+						'REQUEST_TOKEN':Contao.request_token
 					},
 					// dataType: 'json',
 					success: function(msg){
@@ -842,6 +807,7 @@ function updateUsedCEs() {
 			})
 
 			$('.del_col').click(function(e){
+				console.log('del');
 				deleteCol($(this).parent());
 				e.preventDefault();
 				e.stopPropagation();
@@ -1121,20 +1087,43 @@ function updateUsedCEs() {
 		function saveGrix(){
 			$grix.addClass('saving');
 
+
+
+			// Serialize the data in the form
+			var stFormData = $("#grixBeForm").serialize();
+			stFormData += '&grixAction=save';
+			// console.log(stFormData);
+			// return;
+			// Save the current status
 			$.ajax({
 				type: 'POST',
-				url: 'system/modules/gp_grix/ajax/ajax_save_all.php?t='+$.now(),
-				data: $("#grixBeForm").serialize(),
-				cache: false,		     	
+				url: 'system/modules/gp_grix/ajax/ajax.php',
+				data: stFormData,
 				success: function(data){
-					console.log('affectedRows: ',data);
+					console.log(data);
 					$grix.removeClass('saving');
 					$grix.addClass('saved');
+
 				},
 				error: function (xhr, textStatus, errorThrown) {
 					alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
 				}
 			});
+
+			// $.ajax({
+			// 	type: 'POST',
+			// 	url: 'system/modules/gp_grix/ajax/ajax.php?t='+$.now(),
+			// 	data: $("#grixBeForm").serialize() + '&grixAction=save',
+			// 	cache: false,		     	
+			// 	success: function(data){
+			// 		console.log('affectedRows: ',data);
+			// 		$grix.removeClass('saving');
+			// 		$grix.addClass('saved');
+			// 	},
+			// 	error: function (xhr, textStatus, errorThrown) {
+			// 		alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
+			// 	}
+			// });
 		}
 
 

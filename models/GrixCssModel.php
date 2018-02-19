@@ -43,7 +43,7 @@ class GrixCssModel extends \Model
      * @param $strType
      * @return array
      */
-    public static function findStyleDesignationByNotDisabledType($strType)
+    public static function findStyleTitleByNotDisabledType($strType)
     {
         if (!in_array($strType, self::getAvailableTypes())) {
             return array();
@@ -53,9 +53,9 @@ class GrixCssModel extends \Model
         $objDatabase = \Database::getInstance();
 
         $objCssStyleSelector = $objDatabase
-            ->prepare("SELECT id, styleDesignation FROM $t WHERE disableIn" . ucfirst($strType) . "=? ORDER BY styleDesignation ASC")
+            ->prepare("SELECT id, styleTitle FROM $t WHERE disableIn" . ucfirst($strType) . "=? ORDER BY styleTitle ASC")
             ->execute(0);
 
-        return $objCssStyleSelector->fetchEach('styleDesignation');
+        return $objCssStyleSelector->fetchEach('styleTitle');
     }
 }

@@ -1204,3 +1204,14 @@ input[type="button"].btn-block {
 .affix {
 	position: fixed;
 }
+
+.c[class*="push"] {
+	-webkit-transform: translateY(-1rem);
+	-ms-transform: translateY(-1rem);
+	transform: translateY(-1rem);	
+}
+.c.col-lg-push-0 {
+	-webkit-transform: translateY(0);
+	-ms-transform: translateY(0);
+	transform: translateY(0);		
+}

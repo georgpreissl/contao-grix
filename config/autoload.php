@@ -43,7 +43,7 @@ ClassLoader::addClasses(array
 TemplateLoader::addFiles(array
 (
 	'mod_grix' => 'system/modules/gp_grix/templates',
-	'mod_grix_articles' => 'system/modules/gp_grix/templates'
+	'mod_grix_help' => 'system/modules/gp_grix/templates'
 ));
 
 

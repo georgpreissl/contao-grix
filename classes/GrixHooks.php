@@ -100,11 +100,12 @@ class GrixHooks extends \Backend {
  
 		if ($strAction == 'updateUsedCEs') 
 		{
-			// echo 'asdf';
 			// echo \Environment::get('isAjaxRequest');
-			$articleId = \Input::post('articleId');
-			$CEsToDelete = \Input::post('ces');
 
+			$articleId = \Input::post('articleId');
+			// echo $articleId;
+			$CEsToDelete = \Input::post('ces') ? \Input::post('ces') : array();
+			// echo  gettype($CEsToDelete);
 			$result = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($articleId);
 			
 			$arrUsedCEs = unserialize($result->CEsUsed);
@@ -120,11 +121,8 @@ class GrixHooks extends \Backend {
 				}
 			}
 
-
-$data = serialize($newUsedCEs);
-$resultFinal = $this->Database->prepare("UPDATE tl_article SET CEsUsed=? WHERE id=?")->execute($data, $articleId);
-
-
+			$data = serialize($newUsedCEs);
+			$resultFinal = $this->Database->prepare("UPDATE tl_article SET CEsUsed=? WHERE id=?")->execute($data, $articleId);
 
 			echo json_encode(array 
 			(
@@ -134,7 +132,9 @@ $resultFinal = $this->Database->prepare("UPDATE tl_article SET CEsUsed=? WHERE i
 			    'affectedRows'=> $resultFinal->affectedRows,
 			    'token'        => REQUEST_TOKEN 
 			));  
-            exit; 			
+            exit;
+			/*
+            */	
 		}
 
 

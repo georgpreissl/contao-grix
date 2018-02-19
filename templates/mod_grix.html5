@@ -43,7 +43,7 @@
 				<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_next.svg"); ?>
 			</button>
 			</div>
-			<div class="buttons_label">device</div>
+			<div class="buttons_label"><?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_devices'] ?></div>
 		</div>
 
 		<div class="button_wrap button_width_wrap">
@@ -55,7 +55,7 @@
 					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</button>
 			</div>
-			<div class="buttons_label">width <span class="info info_width"></span></div>
+			<div class="buttons_label"><?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_width'] ?> <span class="info info_width"></span></div>
 		</div>
 
 		<div class="button_wrap button_offset_wrap">
@@ -96,19 +96,19 @@
 
 		<div class="button_wrap button_margin_wrap ">
 			<div class="buttons">
-				<button type="button" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_pull_minus'] ?>" class="grix_button grix_bt grix_bt_margin grix_bt_margin_minus" data-prop="margin" data-dir="minus" >
+				<button type="button" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_margin_minus'] ?>" class="grix_button grix_bt grix_bt_margin grix_bt_margin_minus" data-prop="margin" data-dir="minus" >
 					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_minus.svg"); ?>
 				</button>
-				<button type="button" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_pull_plus'] ?>" class="grix_button grix_bt grix_bt_margin grix_bt_margin_plus" data-prop="margin" data-dir="plus" >
+				<button type="button" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_margin_plus'] ?>" class="grix_button grix_bt grix_bt_margin grix_bt_margin_plus" data-prop="margin" data-dir="plus" >
 					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</button>
 			</div>
-			<div class="buttons_label">Margin <span class="info info_margin"></span></div>
+			<div class="buttons_label"><?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_margin'] ?> <span class="info info_margin"></span></div>
 		</div>
 
 		
 		<div class="button_wrap button_duplicate_wrap ">
-			<button class="grix_button grix_duplicate">
+			<button class="grix_button grix_duplicate" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_duplicate'] ?>" >
 				<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/duplicate.svg"); ?>
 			</button>
 		</div>
@@ -122,13 +122,13 @@
 	-->
 		
  		<div class="button_wrap button_deselect_wrap ">
-			<button class="grix_button grix_deselect">
+			<button class="grix_button grix_deselect" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_deselect'] ?>" >
 				<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/deselect.svg"); ?>
 			</button>
 		</div>
 		<div class="button_wrap button_back_wrap ">
-			<button class="grix_button grix_deselect" href="<?= $this->referer ?>">
-					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/device_switch_prev.svg"); ?>
+			<button class="grix_button grix_deselect" href="<?= $this->referer ?>" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_back'] ?>">
+					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/back.svg"); ?>
 			</button>
 		</div>
 
@@ -184,15 +184,16 @@
 
 		<div class="grix_lb_content">
 			<div class="grix_lb_inner">
-				
-				<div class="grix_lb_section grix_lb_classes">
-					<h1><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseClasses'] ?></h1>
-					<ul>
-					<?php foreach ($this->classes as $arrClass) : ?>
-						<li data-alias="<?= $arrClass["alias"] ?>" class="grix_lb_class"><?= $arrClass["name"] ?></li>
-					<?php endforeach; ?>				
-					</ul>
-				</div>
+				<?php if(!empty($this->classes)) : ?>
+					<div class="grix_lb_section grix_lb_classes">
+						<h1><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseClasses'] ?></h1>
+						<ul>
+						<?php foreach ($this->classes as $arrClass) : ?>
+							<li data-alias='<?= $arrClass["alias"] ?>' title='<?= $arrClass["description"] ?>' class="grix_lb_class"><?= $arrClass["name"] ?></li>
+						<?php endforeach; ?>				
+						</ul>
+					</div>
+				<?php endif; ?>
 
 				<div class="grix_lb_section grix_lb_bootstrap">
 					<h1><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseClasses'] ?></h1>
@@ -232,18 +233,21 @@
 
 				<div class="grix_lb_section grix_lb_overview">
 					<h1><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseCE'] ?></h1>
-					<div class="grix_lb_articles">
-						<h3><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseArticle'] ?></h3>
-						<select>                  
-						  <?php foreach ($this->allArticles as $t => $group): ?>
-						      <optgroup label="<?= $t ?>">
-						          <?php foreach ($group as $key => $value): ?>
-						              <option value="<?= $key ?>"><?= $value ?></option>
-						          <?php endforeach; ?>
-						      </optgroup>
-						  <?php endforeach; ?>
-						</select>
-					</div>
+					<?php if(!empty($this->allArticles)) : ?>
+						<div class="grix_lb_articles">
+							<span><?= $GLOBALS['TL_LANG']['tl_grix']['lbChooseArticle'] ?></span>
+							<select> 
+								                
+							  <?php foreach ($this->allArticles as $t => $group): ?>
+							      <optgroup label="<?= $t ?>">
+							          <?php foreach ($group as $key => $value): ?>
+							              <option value="<?= $key ?>"><?= $value ?></option>
+							          <?php endforeach; ?>
+							      </optgroup>
+							  <?php endforeach; ?>
+							</select>
+						</div>
+					<?php endif; ?>
 					<div class="grix_lb_ces">
 						<ul>
 						<?php foreach ($this->ces as $arrCE) : ?>
