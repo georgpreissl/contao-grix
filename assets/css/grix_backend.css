@@ -38,7 +38,7 @@
 	white-space: pre;
 	font-family: monospace;
 	tab-size: 3rem;
-	display: none;
+	
 }
 .grix_beautyfied .key {
 	color: #2B2B2B;
@@ -100,6 +100,9 @@
 }
 .grix_button.grix_bt {
 	/* width: 3rem; */
+}
+.grix_bt:focus {
+	color: inherit;
 }
 .button_wrap {
 	/* display: flex; */
@@ -1125,6 +1128,24 @@
 }
 .grix_help_video {
 	margin-bottom: 2rem;
+}
+.grix_help_shortcuts {
+
+}
+.grix_help_shortcuts table {
+	width: 100%;
+}
+.grix_help_shortcuts table th {
+	background-color: #ddd;
+}
+.grix_help_shortcuts table th,
+.grix_help_shortcuts table td {
+	padding: .5rem;
+}
+@media (min-width: 768px) {
+	.grix_help_shortcuts table {
+	width: 50%;
+}
 }
 @media (min-width: 1500px) {
 	.grix_lb_ce {

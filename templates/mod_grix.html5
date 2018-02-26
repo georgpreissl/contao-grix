@@ -55,7 +55,11 @@
 					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</button>
 			</div>
-			<div class="buttons_label"><?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_width'] ?> <span class="info info_width"></span></div>
+			<div class="buttons_label">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_width_remove'] ?>" class="grix_bt" data-prop="width" data-dir="remove">
+					<?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_width'] ?> <span class="info info_width"></span>
+				</a>
+			</div>
 		</div>
 
 		<div class="button_wrap button_offset_wrap">
@@ -67,7 +71,11 @@
 					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</button>
 			</div>
-			<div class="buttons_label">offset <span class="info info_offset"></span></div>
+			<div class="buttons_label">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_offset_remove'] ?>" class="grix_bt" data-prop="offset" data-dir="remove">
+					<?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_offset'] ?> <span class="info info_offset"></span>
+				</a>
+			</div>
 		</div>
 
 		<div class="button_wrap button_push_wrap">
@@ -79,7 +87,11 @@
 					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</button>
 			</div>
-			<div class="buttons_label">push <span class="info info_push"></span></div>
+			<div class="buttons_label">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_push_remove'] ?>" class="grix_bt" data-prop="push" data-dir="remove">
+					<?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_push'] ?> <span class="info info_push"></span>
+				</a>
+			</div>
 		</div>
 
 		<div class="button_wrap button_pull_wrap ">
@@ -91,7 +103,11 @@
 					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</button>
 			</div>
-			<div class="buttons_label">pull <span class="info info_pull"></span></div>
+			<div class="buttons_label">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_pull_remove'] ?>" class="grix_bt" data-prop="pull" data-dir="remove">
+					<?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_pull'] ?> <span class="info info_pull"></span>
+				</a>
+			</div>
 		</div>
 
 		<div class="button_wrap button_margin_wrap ">
@@ -102,8 +118,14 @@
 				<button type="button" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_margin_plus'] ?>" class="grix_button grix_bt grix_bt_margin grix_bt_margin_plus" data-prop="margin" data-dir="plus" >
 					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/bt_plus.svg"); ?>
 				</button>
+
 			</div>
-			<div class="buttons_label"><?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_margin'] ?> <span class="info info_margin"></span></div>
+			<div class="buttons_label">
+				<a href="#" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_margin_remove'] ?>" class="grix_bt" data-prop="margin" data-dir="remove">
+					<?= $GLOBALS['TL_LANG']['tl_grix']['bt_label_margin'] ?> <span class="info info_margin"></span>
+				</a>
+			</div>
+				
 		</div>
 
 		
@@ -127,7 +149,7 @@
 			</button>
 		</div>
 		<div class="button_wrap button_back_wrap ">
-			<button class="grix_button grix_deselect" href="<?= $this->referer ?>" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_back'] ?>">
+			<button class="grix_button grix_back" title="<?= $GLOBALS['TL_LANG']['tl_grix']['bt_back'] ?>">
 					<?php echo file_get_contents(TL_ROOT."/system/modules/gp_grix/assets/img/ui-icons/back.svg"); ?>
 			</button>
 		</div>

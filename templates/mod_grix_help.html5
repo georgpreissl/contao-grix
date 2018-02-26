@@ -10,5 +10,16 @@
 			<iframe width="560" height="315" src="https://www.youtube.com/embed/jc-GIHvdaoo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 	</div>
 
-
+	<div class="grix_help_shortcuts">
+		<table>
+			<tr>
+				<th class="function" >Funktion</th>
+				<th class="keys" >Tastenkombination</th>
+			</tr>
+			<tr>
+				<td class="function" ><?= $GLOBALS['TL_LANG']['tl_grix']['help_switchDevice'] ?></td>
+				<td class="keys" >Cursor keys 1 to 4</td>
+			</tr>
+		</table>
+	</div>
 </div>

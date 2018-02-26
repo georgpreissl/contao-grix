@@ -19,10 +19,32 @@ $GLOBALS['TL_LANG']['tl_grix']['deviceInfoMd'] = '≥ 992px (Medium devices)';
 $GLOBALS['TL_LANG']['tl_grix']['deviceInfoLg'] = '≥ 1200px (Large devices)';
 
 $GLOBALS['TL_LANG']['tl_grix']['bt_label_devices'] = 'Ausgabegerät';
+
 $GLOBALS['TL_LANG']['tl_grix']['bt_label_width'] = 'Breite';
+$GLOBALS['TL_LANG']['tl_grix']['bt_width_minus'] = 'Breite der ausgewählten Elemente verringern';
+$GLOBALS['TL_LANG']['tl_grix']['bt_width_plus'] = 'Breite der ausgewählten Elemente erhöhen';
+$GLOBALS['TL_LANG']['tl_grix']['bt_width_remove'] = 'Breite der ausgewählten Elemente nicht definieren';
+
+$GLOBALS['TL_LANG']['tl_grix']['bt_label_offset'] = 'Versatz';
+$GLOBALS['TL_LANG']['tl_grix']['bt_offset_minus'] = 'Versatz der ausgewählten Elemente verringern';
+$GLOBALS['TL_LANG']['tl_grix']['bt_offset_plus'] = 'Versatz der ausgewählten Elemente erhöhen';
+$GLOBALS['TL_LANG']['tl_grix']['bt_offset_remove'] = 'Versatz der ausgewählten Elemente nicht definieren';
+
+$GLOBALS['TL_LANG']['tl_grix']['bt_label_push'] = 'Push';
+$GLOBALS['TL_LANG']['tl_grix']['bt_push_minus'] = 'Push-Wert der ausgewählten Elemente verringern';
+$GLOBALS['TL_LANG']['tl_grix']['bt_push_plus'] = 'Push-Wert der ausgewählten Elemente erhöhen';
+$GLOBALS['TL_LANG']['tl_grix']['bt_push_remove'] = 'Push-Wert der ausgewählten Elemente nicht definieren';
+
+$GLOBALS['TL_LANG']['tl_grix']['bt_label_pull'] = 'Pull';
+$GLOBALS['TL_LANG']['tl_grix']['bt_pull_minus'] = 'Pull-Wert der ausgewählten Elemente verringern';
+$GLOBALS['TL_LANG']['tl_grix']['bt_pull_plus'] = 'Pull-Wert der ausgewählten Elemente erhöhen';
+$GLOBALS['TL_LANG']['tl_grix']['bt_pull_remove'] = 'Pull-Wert der ausgewählten Elemente nicht definieren';
+
 $GLOBALS['TL_LANG']['tl_grix']['bt_label_margin'] = 'Abstand';
-$GLOBALS['TL_LANG']['tl_grix']['bt_margin_minus'] = 'Unteren Abstand des ausgewählten Elements verringern';
-$GLOBALS['TL_LANG']['tl_grix']['bt_margin_plus'] = 'Unteren Abstand des ausgewählten Elements erhöhen';
+$GLOBALS['TL_LANG']['tl_grix']['bt_margin_minus'] = 'Unteren Abstand der ausgewählten Elemente verringern';
+$GLOBALS['TL_LANG']['tl_grix']['bt_margin_plus'] = 'Unteren Abstand der ausgewählten Elemente erhöhen';
+$GLOBALS['TL_LANG']['tl_grix']['bt_margin_remove'] = 'Unteren Abstand der ausgewählten Elemente nicht definieren';
+
 $GLOBALS['TL_LANG']['tl_grix']['bt_duplicate'] = 'Ausgewähltes Element duplizieren';
 $GLOBALS['TL_LANG']['tl_grix']['bt_deselect'] = 'Auswahl aufheben';
 $GLOBALS['TL_LANG']['tl_grix']['bt_back'] = 'Zurück zur vorherigen Seite';
@@ -39,6 +61,7 @@ $GLOBALS['TL_LANG']['tl_grix']['lbCancel'] = 'Abbrechen';
 
 $GLOBALS['TL_LANG']['tl_grix']['helpInstallUsage'] = 'Installation und Verwendung';
 $GLOBALS['TL_LANG']['tl_grix']['help_nestedColumns'] = 'Verschachtelte Raster erstellen';
+$GLOBALS['TL_LANG']['tl_grix']['help_switchDevice'] = 'Ausgabegerät-Ansicht wechseln';
 
 
 

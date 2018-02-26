@@ -169,7 +169,7 @@ class GrixBe extends \BackendModule
 		$this->Template->ces = $arrCEsOverall;
 		$this->Template->action = ampersand(\Environment::get('request'));
 		// $this->Template->href = $this->getReferer(true);
-		$this->Template->referer = 'javascript:history.go(-1)';
+		// $this->Template->referer = 'javascript:history.go(-1)';
 		$this->Template->title = specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']);
 		$this->Template->lc = file_get_contents(TL_ROOT . '/system/modules/gp_grix/assets/img/lb-icons/lb-close.svg');
 

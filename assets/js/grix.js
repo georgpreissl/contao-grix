@@ -2,28 +2,18 @@
 
 
 	window.Grix = function(obCfg){
+		var debug = false;
 		var obData = obCfg.data;
 		var level = 0;
 		var device = 'lg';
 		var arAct = [];
 		var arResKeys = [38,40,49,50,51,52,83,37,39,27,32];
-		var arBootProps = ['width','offset','push','pull'];
+		var arBootProps = ['width','offset','push','pull','margin'];
 		var arDevices = ['xs','sm','md','lg'];
+		var arConfDefault = ['12','6-6','3-3-3-3','3-9','9-3','3-3-6','6-3-3','3-6-3','4-4-4','4-8','8-4'];
 		var $grix = $('.grix');
 		var $body = $('body');
 
-
-
-
-		function scanForCEs(obj,ar){
-			if (obj.type == 'ce') ar.push(obj.id);
-			if (obj.elements) {
-				for (var i = 0; i < obj.elements.length; i++) {
-					ar = scanForCEs(obj.elements[i],ar);
-				};
-			};
-			return ar;
-		};
 
 
 		this.init = function(){
@@ -88,44 +78,73 @@
 			});
 
 			$('.grix_bt').click(function(e){
+
+				e.preventDefault();
 				var prop = $(this).data('prop');
 				var dir = $(this).data('dir');
-
 				if (arAct.length) {
 
 					for (var i = 0; i < arAct.length; i++) {
 						
 				    	var obEl = getTarget(arAct[i]);
-						var nrMin = 0;
-						var nrMax = 12;
-						var nrV = '';
 
-						if (prop == 'width') nrMin = 1;
-						if (prop == 'margin') nrMax = 20;
+						if (dir == 'remove') {
+							nrV = '';
+						} else{
 
-						for (var dev in obEl[prop]) {
-							var cv = obEl[prop][dev];
-							if (cv != '') nrV = cv;
-							if (dev == device) break;
+
+							var nrMin = 0;
+							var nrMax = 12;
+							var nrV = '';
+
+							if (prop == 'width') nrMin = 1;
+							if (prop == 'margin') nrMax = 20;
+
+							// if (prop == 'margin') {
+							// 	nrV = obEl.margin[device];
+							// } else {
+								for (var dev in obEl[prop]) {
+									var cv = obEl[prop][dev];
+									if (cv != '') nrV = cv;
+									if (dev == device) break;
+								};
+							// }
+							// console.log('nrV: ',nrV);
+
+							// no value has been set yet
+					    	if (nrV == '') {
+								if (prop == 'width') {
+						    		nrV = 12;
+								} else {
+						    		nrV = 0;
+								}
+					    	};
+					    	
+					    	nrV = parseInt(nrV);
+							dir == 'minus' ? nrV-- : nrV++;
+							if (nrV < nrMin) nrV = nrMin;
+							if (nrV > nrMax) nrV = nrMax;
 						};
 
-						// no value has been set yet
-				    	if (nrV == '') {
-							if (prop == 'width') {
-					    		nrV = 12;
-							} else {
-					    		nrV = 0;
-							}
-				    	};
-				    	
-				    	nrV = parseInt(nrV);
-						dir == 'minus' ? nrV-- : nrV++;
-						if (nrV < nrMin) nrV = nrMin;
-						if (nrV > nrMax) nrV = nrMax;
+
 
 				    	$('.info_'+prop).text(nrV);
 					    obEl[prop][device] = String(nrV);
+					    // console.log('obEl[prop][device]: ',obEl[prop][device]);
 					    // eg: obEl.width.lg = 6
+
+
+					    // adapt unitsConf of parent row
+						if(obEl.type=='col' && prop=='width') {
+							var obP = getTarget(arAct[i],1);
+							var arConf = [];
+							for (var z = 0; z < obP.elements.length; z++) {
+								var obCol = obP.elements[z];
+								arConf.push(obCol.width[device]);
+							}
+							obP.unitsConf[device] = arConf.join('-');
+						}
+
 
 			    	};
 			    	// redraw the grid every time the values are changed
@@ -139,6 +158,10 @@
 				$('.x').removeClass('active');
 				$grix.removeClass('act_row act_col act_ce');
 				$('.info').text('');
+			});
+
+			$('.grix_back').click(function(e) {
+				history.go(-1);
 			});
 
 
@@ -188,7 +211,15 @@
 			return index;
 		}
 
-		
+		function scanForCEs(obj,ar){
+			if (obj.type == 'ce') ar.push(obj.id);
+			if (obj.elements) {
+				for (var i = 0; i < obj.elements.length; i++) {
+					ar = scanForCEs(obj.elements[i],ar);
+				};
+			};
+			return ar;
+		};		
 
 		// row functions
 
@@ -246,7 +277,7 @@
 			var obT = getTarget(el);
 
 			var arCEsFound = scanForCEs(obT,[]);
-			console.log('arCEsFound: ',arCEsFound);
+			// console.log('arCEsFound: ',arCEsFound);
 
 			obP.elements.splice(getIndex(el),1);
 			$.ajax({
@@ -261,10 +292,10 @@
 				cache: false		     	
 			}).done(function(obj) {
 				// console.log(obj);
-				console.log('UsedCEs: ',obj.usedCEs);
-				console.log('CEsToDelete: ',obj.CEsToDelete);
-				console.log('newUsedCEs: ',obj.newUsedCEs);
-				console.log('affectedRows: ',obj.affectedRows);
+				// console.log('UsedCEs: ',obj.usedCEs);
+				// console.log('CEsToDelete: ',obj.CEsToDelete);
+				// console.log('newUsedCEs: ',obj.newUsedCEs);
+				// console.log('affectedRows: ',obj.affectedRows);
 				drawGrix();
 			});
 		}
@@ -326,7 +357,7 @@
 				data: stFormData,
 				dataType: 'json',				
 				success: function(data){
-					console.log(data);
+					// console.log(data);
 					// Status has been saved, now create the new CE
 					// window.location.href = 'contao/main.php?do=article&table=tl_content&act=create&mode=2&pid='+obCfg.articleId+'&id='+obCfg.articleId+'&grix=create&rt='+obCfg.requTok+'&phid='+stPhId;
 				},
@@ -352,7 +383,7 @@
 				url: 'system/modules/gp_grix/ajax/ajax.php',
 				data: stFormData,
 				success: function(data){
-					console.log(data);
+					// console.log(data);
 					// Status has been saved, now create the new CE
 					window.location.href = 'contao/main.php?do=article&table=tl_content&act=create&mode=2&pid='+obCfg.articleId+'&id='+obCfg.articleId+'&grix=create&rt='+obCfg.requTok+'&phid='+stPhId;
 				},
@@ -383,7 +414,7 @@
 			if (obRow.elements.length == 1) return false;
 
 			var arCEsFound = scanForCEs(obCol,[]);
-			console.log('arCEsFound: ',arCEsFound);
+			// console.log('arCEsFound: ',arCEsFound);
 
 			var arCols = obRow.elements;
 			// console.log('arCols:',arCols);
@@ -436,10 +467,10 @@
 					dataType: 'json',
 					cache: false		     	
 				}).done(function(obj) {
-					console.log('UsedCEs: ',obj.usedCEs);
-					console.log('CEsToDelete: ',obj.CEsToDelete);
-					console.log('newUsedCEs: ',obj.newUsedCEs);
-					console.log('affectedRows: ',obj.affectedRows);
+					// console.log('UsedCEs: ',obj.usedCEs);
+					// console.log('CEsToDelete: ',obj.CEsToDelete);
+					// console.log('newUsedCEs: ',obj.newUsedCEs);
+					// console.log('affectedRows: ',obj.affectedRows);
 					drawGrix();
 				});
 			} else {
@@ -490,10 +521,10 @@
 				cache: false		     	
 
 			}).done(function(obj) {
-				console.log('UsedCEs: ',obj.usedCEs);
-				console.log('CEsToDelete: ',obj.CEsToDelete);
-				console.log('newUsedCEs: ',obj.newUsedCEs);
-				console.log('affectedRows: ',obj.affectedRows);
+				// console.log('UsedCEs: ',obj.usedCEs);
+				// console.log('CEsToDelete: ',obj.CEsToDelete);
+				// console.log('newUsedCEs: ',obj.newUsedCEs);
+				// console.log('affectedRows: ',obj.affectedRows);
 				drawGrix();
 			});	
 
@@ -587,7 +618,7 @@
 					},
 					// dataType: 'json',
 					success: function(msg){
-						console.log('insertce-message: ',msg);
+						// console.log('insertce-message: ',msg);
 						drawGrix();
 					},
 					error: function (xhr, textStatus, errorThrown) {
@@ -607,7 +638,16 @@
 
 
 			for (var i = 0; i < arAct.length; i++) {
-				$(".grix").find("[data-id='"+ arAct[i] +"']").addClass('active');
+				$grix.find("[data-id='"+ arAct[i] +"']").addClass('active');
+
+				var obEl = getTarget(arAct[i]);
+
+				for (var z = 0; z < arBootProps.length; z++) {
+					var prop = arBootProps[z];
+					if (obEl[prop]) {
+						$('.info_'+prop).text(obEl[prop][device]);
+					};
+				};
 			}
 
 			$('.x').click(function(e) {
@@ -807,7 +847,7 @@
 			})
 
 			$('.del_col').click(function(e){
-				console.log('del');
+				// console.log('del');
 				deleteCol($(this).parent());
 				e.preventDefault();
 				e.stopPropagation();
@@ -843,6 +883,14 @@
 
 		}	
 		
+
+		function checkIcon(el) {
+			// console.log(el);
+			var stConf = el.unitsConf[device];
+			if (arConfDefault.indexOf(stConf) < 0) stConf = 'unknown';
+			return "system/modules/gp_grix/assets/img/col-icons/col-icon-"+stConf+".svg";
+		}
+
 			
 		function createBeHtmlCode(arEls,level,id){
 			level++;
@@ -851,11 +899,11 @@
 			var stClassSingle = (nrElsY==1 && level==0 ? " single_row" : "");
 			// console.log('arEls:',arEls);
 
-			for(var y=0; y<nrElsY; y++){
+			for(var y=0; y < nrElsY; y++){
 				var obEl = arEls[y];
 
 				// lets build a row
-				if(obEl.type == "row"){
+				if(obEl.type == 'row'){
 					var idx = (id=='' ? y : id+"_"+y);
 					
 					html += "<div class='x r"+stClassSingle+"' data-id='"+idx+"' >\
@@ -871,7 +919,6 @@
 							var obCol = arCols[x];
 							var stNewId = (id=='' ? y+"_"+x : id+"_"+y+"_"+x);
 							var stClass = "x c l"+level+stClassSingle;
-
 
 							// add the bootstrap classes
 							for (var i = 0; i < arBootProps.length; i++) {
@@ -889,7 +936,7 @@
 							};
 
 							html += "<div class='"+stClass+"' data-id='"+stNewId+"' >\
-											<div class='c_content'>";
+										<div class='c_content'>";
 						
 							if(obCol.elements && obCol.elements.length > 0){
 								html += createBeHtmlCode(obCol.elements,level,stNewId);
@@ -897,7 +944,7 @@
 						
 							html += "</div>\
 										<div class='menu c_menu cf' data-id='"+stNewId+"' data-type='col' >\
-											<a class='btn ins_row' data-type='col' ></a>\
+											<a class='btn ins_row' ></a>\
 											<a class='btn add_ce' ></a>\
 											<a class='btn adj_col' ></a>\
 											<a class='btn del_col' ></a>\
@@ -908,13 +955,12 @@
 						}
 					}
 
-					// var stNewId = (id=='' ? y : id+"_"+y);
 					html += "</div>\
 								<div class='menu r_menu cf' data-id='"+idx+"' data-type='row' >\
 									<a class='btn ins_col' data-type='row' ></a>\
 									<a class='btn add_row' data-type='row' ></a>\
 									<a class='btn adj_row' ></a>\
-									<div class='btn split_col' style='background-image:url(system/modules/gp_grix/assets/img/col-icons/col-icon-"+obEl.unitsConf[device]+".png)' >\
+									<div class='btn split_col' style='background-image:url("+checkIcon(obEl)+")' >\
 										<div class='h_menu h_menu_split_col'>\
 											<a class='btn hmi_sc' data-units='12' ></a>\
 											<a class='btn hmi_sc' data-units='6-6' ></a>\
@@ -1035,11 +1081,12 @@
 
 
 		function createBeMargin(el) {
-			// console.log(el.margin);
+			// console.log('margin: ',el.margin[device]);
+			// return el.margin[device];
+
 			var stM = "";
 			for (var z = 0; z < arDevices.length; z++) {
 				var cmb = el.margin[arDevices[z]];
-				// console.log(cmb);
 				if (cmb!="") {
 					stM = cmb;
 				};
@@ -1047,7 +1094,6 @@
 					break;
 				};
 			};
-			// console.log(stM);
 			return stM;
 		}
 
@@ -1073,34 +1119,31 @@
 			// fill the backend form inputs
 			$('#ctrl_grixHtmlFrontend').val(stHtmlFe);
 			$('#ctrl_grixJson').val(stJson);
-
-			var stJsonBeautyfied = JSON.stringify(obData,null, "\t");
-			stJsonBeautyfied = syntaxHighlight(stJsonBeautyfied);
-			$('.grix_beautyfied').html(stJsonBeautyfied);
-			$grix.removeClass('saved');
-
 			addUi();
+
+			if (debug) {
+				var stJsonBeautyfied = JSON.stringify(obData,null, "\t");
+				stJsonBeautyfied = syntaxHighlight(stJsonBeautyfied);
+				$('.grix_beautyfied').html(stJsonBeautyfied);
+			};
+
+			// $grix.removeClass('saved');
 			// saveGrix(stJson,stHtmlFe);
 		}
 
 
+		// Save with Ajax – due to cache problems not working :(
+
 		function saveGrix(){
 			$grix.addClass('saving');
-
-
-
-			// Serialize the data in the form
 			var stFormData = $("#grixBeForm").serialize();
 			stFormData += '&grixAction=save';
-			// console.log(stFormData);
-			// return;
-			// Save the current status
 			$.ajax({
 				type: 'POST',
 				url: 'system/modules/gp_grix/ajax/ajax.php',
 				data: stFormData,
 				success: function(data){
-					console.log(data);
+					// console.log(data);
 					$grix.removeClass('saving');
 					$grix.addClass('saved');
 
@@ -1110,20 +1153,6 @@
 				}
 			});
 
-			// $.ajax({
-			// 	type: 'POST',
-			// 	url: 'system/modules/gp_grix/ajax/ajax.php?t='+$.now(),
-			// 	data: $("#grixBeForm").serialize() + '&grixAction=save',
-			// 	cache: false,		     	
-			// 	success: function(data){
-			// 		console.log('affectedRows: ',data);
-			// 		$grix.removeClass('saving');
-			// 		$grix.addClass('saved');
-			// 	},
-			// 	error: function (xhr, textStatus, errorThrown) {
-			// 		alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
-			// 	}
-			// });
 		}
 
 
