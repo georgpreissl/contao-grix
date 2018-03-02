@@ -298,6 +298,8 @@
 }
 .grix_preview .grix_grid .r .r_content {
 	padding-bottom: .4rem;
+	border-bottom: 1px solid #dad9d9;
+	border-radius: 0 0 4px 4px;
 }
 .grix_preview .grix_toggle_preview svg path {
 	fill: #81C21A;
@@ -480,7 +482,7 @@
 	background-color: #e6f4c9;
 }
 .grix .btn.ins_col {
-	background-image: url('../img/ui-icons/add-col.svg');
+	background-image: url('../img/ui-icons/ins-col.svg');
 	
 }
 .grix .btn.add_row {
@@ -563,7 +565,10 @@
 	/* background-color: rgb(240, 239, 239); */
 	cursor: pointer;
 }
-.grix .r:only-child > .r_menu > a.del_row {
+.grix_preview .grix .r {
+
+}
+.grix .grix_grid > .r:only-child > .r_menu > a.del_row {
    display: none;
 
 }
@@ -694,6 +699,7 @@
 .grix_preview .grix .c .c_content {
 	padding-bottom: .4rem;
 	min-height: 1rem;
+
 }
 .grix .c .c_menu {
 	/* background-color: #c7c7c7; */
