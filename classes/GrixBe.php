@@ -93,7 +93,8 @@ class GrixBe extends \BackendModule
 		// get all the CEs of this article created by Grix
 		$objCEsUsed = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($id);
 		$arrCEsUsed = unserialize($objCEsUsed->CEsUsed);
-		if ($arrCEsUsed == false) {
+		if ($arrCEsUsed == false) 
+		{
 			$arrCEsUsed = array();
 		}
 		$intCEsUsedNr = count($arrCEsUsed);
@@ -102,8 +103,10 @@ class GrixBe extends \BackendModule
 		// get all the CEs of this article created by contao directly
 		$objCEs = \ContentModel::findPublishedByPidAndTable($id,'tl_article');
         $arrCEs = array();
-	    if ($objCEs !== null)
+	    if ($objCEs == null)
 	    {
+	        $intCEsNr = 0;
+	    } else {
 	        $intCEsNr = $objCEs->count();
 
 	        while ($objCEs->next()) 
@@ -111,6 +114,7 @@ class GrixBe extends \BackendModule
 	            $objCE = $objCEs->current();
 	            $arrCEs[] = $objCE->id;
 	        }
+	    	
 	    }
 
 
@@ -186,9 +190,9 @@ class GrixBe extends \BackendModule
 
 		// for debugging
 		$this->Template->CEsNr = $intCEsNr;
-		$this->Template->CEs = implode(", ", $arrCEs);
+		$this->Template->CEs = count($arrCEs) ? 'IDs: ' . implode(", ", $arrCEs) : '';
 		$this->Template->CEsUsedNr = $intCEsUsedNr;
-		$this->Template->CEsUsed = implode(", ", $arrCEsUsed);
+		$this->Template->CEsUsed = count($arrCEsUsed) ? 'IDs: ' . implode(", ", $arrCEsUsed) : '';
 
 		
 	}

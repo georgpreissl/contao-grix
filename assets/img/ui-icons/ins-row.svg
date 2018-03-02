@@ -5,16 +5,12 @@
 <style type="text/css">
 	.st0{fill:none;stroke:#848484;stroke-width:1.5;stroke-miterlimit:10;}
 	.st1{fill:none;stroke:#81C21A;stroke-width:1.5;stroke-miterlimit:10;}
-	.st2{fill:#848484;}
+	.st2{fill:none;stroke:#848484;stroke-miterlimit:10;}
 </style>
 <g>
-	<g>
-		<line class="st0" x1="3.2" y1="8" x2="12.8" y2="8"/>
-		<line class="st0" x1="3.2" y1="4" x2="12.8" y2="4"/>
-		<line class="st1" x1="3.2" y1="12" x2="12.8" y2="12"/>
-	</g>
-	<g>
-		<path class="st2" d="M15,1v14H1V1H15 M16,0H0v16h16V0L16,0z"/>
-	</g>
+	<line class="st0" x1="3.4" y1="8" x2="12.6" y2="8"/>
+	<line class="st0" x1="3.4" y1="4.5" x2="12.6" y2="4.5"/>
+	<line class="st1" x1="3.4" y1="11.5" x2="12.6" y2="11.5"/>
 </g>
+<path class="st2" d="M15.5,15.4V0.5h-15v15h15V15.4z"/>
 </svg>

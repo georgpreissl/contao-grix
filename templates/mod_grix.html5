@@ -195,7 +195,25 @@
 		<?php endforeach; ?>
 	</ul>
 
-	<div class="grix_beautyfied"></div>
+	<div class="grix_debuginfo">
+
+		<div class="grix_beautyfied">
+			
+		</div>
+
+		<div class="grix_debuginfo_article">
+			
+			<h2>Content elements contained in this article</h2>
+			<p>Number: <?= $this->CEsNr; ?></p>
+			<p><?= $this->CEs; ?></p>
+			<br>
+			<h2>Content elements used in the grix grid above</h2>
+			<p>Number: <?= $this->CEsUsedNr; ?></p>
+			<p><?= $this->CEsUsed; ?></p>
+		</div>		
+				
+
+	</div>
 
 
 
@@ -379,17 +397,7 @@
 
 
 </div>
-<div class="grix_debug_article">
-	
-	<h2>Content elements contained in this article</h2>
-	<p>Number: <?= $this->CEsNr; ?></p>
-	<p>IDs: <?= $this->CEs; ?></p>
-	<br>
-	<h2>Content elements used by grix in this article<br>
-		<em>(Simply only the elements used in the grid above)</em></h2>
-	<p>Number: <?= $this->CEsUsedNr; ?></p>
-	<p>IDs: <?= $this->CEsUsed; ?></p>
-</div>
+
 
 
 

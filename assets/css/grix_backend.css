@@ -20,14 +20,6 @@
 	box-sizing: initial !important;
 	
 }
-.grix_debug {
-	display: block !important;
-	
-}
-.grix_debug_article {
-	padding: 2rem;
-	display: none;
-}
 .grixJs {
 	margin: 1em 0 0;
 	position: relative;
@@ -132,7 +124,6 @@
 .act_col .button_push_wrap,
 .act_col .button_pull_wrap,
 .act_row .button_margin_wrap,
-.act_col .button_margin_wrap,
 .act_ce .button_margin_wrap,
 .act_row .grix_deselect,
 .act_col .grix_deselect,
@@ -494,7 +485,7 @@
 	
 }
 .grix .btn.edi_ele {
-	background-image: url('../img/ui-icons/edit-ce.svg');
+	background-image: url('../img/ui-icons/edit-element.svg');
 	
 }
 .grix .btn.ins_ele {
@@ -503,12 +494,12 @@
 }
 .grix .btn.rem_ele, 
 .grix .btn.del_col { 
-	background-image: url('../img/ui-icons/ui-icon-remove.svg');
+	background-image: url('../img/ui-icons/delete.svg');
 	
 }
 .grix .btn.del_row, 
 .grix .btn.del_ele {
-	background-image: url('../img/ui-icons/ui-icon2.svg');
+	background-image: url('../img/ui-icons/delete.svg');
 	
 }
 .grix .btn.add_pic {
@@ -521,15 +512,15 @@
 }
 .grix .btn.adj_col,
 .grix .btn.adj_row {
-	background-image: url('../img/ui-icons/ui-icon-settings.svg');
+	background-image: url('../img/ui-icons/settings.svg');
 	
 }
 .grix .btn.reorder[data-dir="up"] {
-	background-image: url('../img/ui-icons/ui-icon8.svg');
+	background-image: url('../img/ui-icons/reorder-up.svg');
 	
 }
 .grix .btn.reorder[data-dir="down"] {
-	background-image: url('../img/ui-icons/ui-icon9.svg');
+	background-image: url('../img/ui-icons/reorder-down.svg');
 	
 }
 .grix .single_row .btn.reorder,
@@ -581,12 +572,12 @@
 	flex-wrap: wrap;
 	background-image: url('../img/bg.svg');
 	background-size: contain;
-	background-color: rgb(240,240,240);
+	background-color: rgb(245,245,245);
 	border: 1px solid #dad9d9;
 	border-bottom: none;
 }
 .grix .r .r_menu {
-	background-color: rgb(240,240,240);
+	background-color: rgb(245,245,245);
 	border-radius: 0 0 4px 4px;
 	border: 1px solid #dad9d9;
 	border-top: 1px solid rgba(0,0,0,0.05);
@@ -653,7 +644,7 @@
 	min-height: 100px;
 	border-radius: 0 0 4px 4px;
 	position: relative;
-	background-color: #e3e1e1;
+	background-color: rgb(230,230,230);
 	border: 1px solid #a6a5a5;
 	cursor: pointer;
 	width: 100%;
@@ -689,9 +680,6 @@
 .grix .c .c_content {
 	padding: 0.4rem;
 	min-height: 7rem;
-	/* -webkit-transition: background-color .2s ease; */
-	-moz-transition: background-color .2s ease;
-	/* transition: background-color .2s ease; */
 	flex-direction: row;
 	width: 100%;
 	padding-bottom: 2rem;
@@ -1129,6 +1117,20 @@
 	display: inline-block;
 	width: 12rem;
 }
+.grix_debuginfo {
+	display: none;
+}
+.grix_debuginfo_article {
+	font-size: 1.5em;
+}
+.grix_debuginfo > div {
+	flex-basis: 50%;
+}
+.grix_debug .grix_debuginfo {
+	display: flex;
+
+}
+
 .grix_help {
 	padding: 2rem;
 }

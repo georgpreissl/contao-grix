@@ -2,7 +2,7 @@
 
 
 	window.Grix = function(obCfg){
-		var debug = false;
+		var debug = true;
 		var obData = obCfg.data;
 		var level = 0;
 		var device = 'lg';
@@ -1122,6 +1122,7 @@
 			addUi();
 
 			if (debug) {
+				$body.addClass('grix_debug');
 				var stJsonBeautyfied = JSON.stringify(obData,null, "\t");
 				stJsonBeautyfied = syntaxHighlight(stJsonBeautyfied);
 				$('.grix_beautyfied').html(stJsonBeautyfied);
