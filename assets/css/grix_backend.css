@@ -1134,8 +1134,14 @@
 .grix_help {
 	padding: 2rem;
 }
+.grix_help_section {
+	margin-bottom: 3rem;
+}
 .grix_help_video {
 	margin-bottom: 2rem;
+}
+.grix_help_video iframe {
+	margin-bottom: .6rem;
 }
 .grix_help_shortcuts {
 

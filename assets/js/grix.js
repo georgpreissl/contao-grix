@@ -2,7 +2,7 @@
 
 
 	window.Grix = function(obCfg){
-		var debug = true;
+		var debug = false;
 		var obData = obCfg.data;
 		var level = 0;
 		var device = 'lg';
