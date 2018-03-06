@@ -64,6 +64,7 @@ class GrixHooks extends \Backend {
 	 */
 	public function createGrixIcon($row, $href, $label, $title, $icon, $attributes)
 	{
+		// printf('<pre>%s</pre>', print_r($row,true));
 		$strIcon = ($row['grixToggle'] == '') ? 'icon_inactive' : 'icon';
 		return '<a class="grix_icon" href="contao/main.php?do=grixbe&amp;id='.$row['id'].'&amp;ref='.REQUEST_TOKEN.'" title="'.specialchars($title).'"'.$attributes.'>'
 		.\Image::getHtml('system/modules/gp_grix/assets/img/'.$strIcon.'.svg', $label)

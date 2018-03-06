@@ -4,16 +4,23 @@
 	window.Grix = function(obCfg){
 		var debug = false;
 		var obData = obCfg.data;
+
+		var arCEsUsed = [];
+		for (var key in obCfg.CEsUsed) {
+		    if (obCfg.CEsUsed.hasOwnProperty(key)) {
+		        arCEsUsed.push(parseInt(obCfg.CEsUsed[key]));
+		    }
+		}
+
 		var level = 0;
-		var device = 'lg';
 		var arAct = [];
 		var arResKeys = [38,40,49,50,51,52,83,37,39,27,32];
 		var arBootProps = ['width','offset','push','pull','margin'];
 		var arDevices = ['xs','sm','md','lg'];
+		var device = 'lg';
 		var arConfDefault = ['12','6-6','3-3-3-3','3-9','9-3','3-3-6','6-3-3','3-6-3','4-4-4','4-8','8-4'];
 		var $grix = $('.grix');
 		var $body = $('body');
-
 
 
 		this.init = function(){
@@ -21,6 +28,10 @@
 			drawGrix();
 		}
 
+		function updateDebug(){
+			$('#DbgCEsUsedNr').text(arCEsUsed.length);
+			$('#DbgCEsUsedArr').text(arCEsUsed.join(','));	
+		}
 
 		function initUi(){
 
@@ -57,6 +68,16 @@
 				}
 			});
 
+			$('#grix_deleteAll').click(function(e){
+				arCEsUsed = [];
+				var obRow = new GrixRow();
+				obRow.addCol(new GrixCol());
+				var stJson = "["+JSON.stringify(obRow)+"]";
+				$('#ctrl_grixJson').val(stJson);
+				$('#grixBeForm').submit();
+				e.preventDefault();
+			})
+
 			$('.grix_device').click(function(e){
 				device = $(this).data('device');
 				$(this).addClass('active').siblings().removeClass('active');
@@ -91,8 +112,6 @@
 						if (dir == 'remove') {
 							nrV = '';
 						} else{
-
-
 							var nrMin = 0;
 							var nrMax = 12;
 							var nrV = '';
@@ -100,16 +119,11 @@
 							if (prop == 'width') nrMin = 1;
 							if (prop == 'margin') nrMax = 20;
 
-							// if (prop == 'margin') {
-							// 	nrV = obEl.margin[device];
-							// } else {
-								for (var dev in obEl[prop]) {
-									var cv = obEl[prop][dev];
-									if (cv != '') nrV = cv;
-									if (dev == device) break;
-								};
-							// }
-							// console.log('nrV: ',nrV);
+							for (var dev in obEl[prop]) {
+								var cv = obEl[prop][dev];
+								if (cv != '') nrV = cv;
+								if (dev == device) break;
+							};
 
 							// no value has been set yet
 					    	if (nrV == '') {
@@ -126,13 +140,9 @@
 							if (nrV > nrMax) nrV = nrMax;
 						};
 
-
-
 				    	$('.info_'+prop).text(nrV);
 					    obEl[prop][device] = String(nrV);
-					    // console.log('obEl[prop][device]: ',obEl[prop][device]);
 					    // eg: obEl.width.lg = 6
-
 
 					    // adapt unitsConf of parent row
 						if(obEl.type=='col' && prop=='width') {
@@ -144,7 +154,6 @@
 							}
 							obP.unitsConf[device] = arConf.join('-');
 						}
-
 
 			    	};
 			    	// redraw the grid every time the values are changed
@@ -164,27 +173,34 @@
 				history.go(-1);
 			});
 
-
 			$('.grix_duplicate').click(function(e) {
-				if (arAct.length) {
-					for (var i = 0; i < arAct.length; i++) {
-						var id = String(arAct[i]);
-						var obT = getTarget(id);
-						var obP = getTarget(id,1);
-						var obTCopy = JSON.parse(JSON.stringify(obT));
-						obP.elements.splice(getIndex(id), 0, obTCopy);
-						drawGrix();
+				for (var i = 0; i < arAct.length; i++) {
+					var id = String(arAct[i]);
+					var obT = getTarget(id);
+
+					var arCEsFound = scanForCEs(obT,[]);
+					// console.log('arCEsFound: ',arCEsFound);
+					for (var i = 0; i < arCEsFound.length; i++) {
+						arCEsUsed.push(arCEsFound[i]);
 					};
-				} else {
-					alert('Please select the elements to be duplicated first.')
-				}
+					if (debug) updateDebug();
+
+					var obP = getTarget(id,1);
+					var obTCopy = JSON.parse(JSON.stringify(obT));
+					obP.elements.splice(getIndex(id), 0, obTCopy);
+					drawGrix();
+				};
 			});
 
+			$('#grixBeForm').submit(function() {
+				var stCEsUsed = JSON.stringify(arCEsUsed);
+				$('input[name="CEsUsed"]').val(stCEsUsed);
+			});
 
-			$('.grix_save').click(function(e) {
+			// $('.grix_save').click(function(e) {
 				// saveGrix();
 				// e.preventDefault();
-			});
+			// });
 
 		}
 
@@ -212,7 +228,7 @@
 		}
 
 		function scanForCEs(obj,ar){
-			if (obj.type == 'ce') ar.push(obj.id);
+			if (obj.type == 'ce') ar.push(parseInt(obj.id));
 			if (obj.elements) {
 				for (var i = 0; i < obj.elements.length; i++) {
 					ar = scanForCEs(obj.elements[i],ar);
@@ -280,24 +296,16 @@
 			// console.log('arCEsFound: ',arCEsFound);
 
 			obP.elements.splice(getIndex(el),1);
-			$.ajax({
-				type: 'POST',
-				data: {
-					'ces': arCEsFound,
-					'articleId': obCfg.articleId,
-					'action':'updateUsedCEs',
-					'REQUEST_TOKEN':Contao.request_token
-				},
-				dataType: 'json',
-				cache: false		     	
-			}).done(function(obj) {
-				// console.log(obj);
-				// console.log('UsedCEs: ',obj.usedCEs);
-				// console.log('CEsToDelete: ',obj.CEsToDelete);
-				// console.log('newUsedCEs: ',obj.newUsedCEs);
-				// console.log('affectedRows: ',obj.affectedRows);
-				drawGrix();
-			});
+
+			for (var i = 0; i < arCEsFound.length; i++) {
+				var ix = arCEsUsed.indexOf(arCEsFound[i]);
+				// console.log('ix: ',ix);
+				if (ix > -1) {
+				    arCEsUsed.splice(ix, 1);
+				}
+			};
+			if (debug) updateDebug();
+			drawGrix();
 		}
 
 		function splitCol(el,stUnits){
@@ -342,31 +350,6 @@
 		
 
 		// col functions
-
-
-		// funktioniert NICHT!!!
-		// speichert im NULL in grixJs !!!
-		function addCEXXX(el){
-			var stPhId = el.data('id');
-
-			var stFormData = $("#grixBeForm").serialize()+'&'+$.param({ action: 'saveBeforeAddCE'});
-
-			// Save the current status
-			$.ajax({
-				type: 'POST',
-				data: stFormData,
-				dataType: 'json',				
-				success: function(data){
-					// console.log(data);
-					// Status has been saved, now create the new CE
-					// window.location.href = 'contao/main.php?do=article&table=tl_content&act=create&mode=2&pid='+obCfg.articleId+'&id='+obCfg.articleId+'&grix=create&rt='+obCfg.requTok+'&phid='+stPhId;
-				},
-				error: function (xhr, textStatus, errorThrown) {
-					alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
-				}
-			});
-		}
-
 
 
 		function addCE(el){
@@ -455,27 +438,17 @@
 				obRow.unitsConf[device] = arCols[0].width[device];
 
 			}
-			if (arCEsFound.length > 0) {
-				$.ajax({
-					type: 'POST',
-					data: {
-						'action':'updateUsedCEs',
-						'ces': arCEsFound,
-						'articleId': obCfg.articleId,
-						'REQUEST_TOKEN':Contao.request_token
-					},
-					dataType: 'json',
-					cache: false		     	
-				}).done(function(obj) {
-					// console.log('UsedCEs: ',obj.usedCEs);
-					// console.log('CEsToDelete: ',obj.CEsToDelete);
-					// console.log('newUsedCEs: ',obj.newUsedCEs);
-					// console.log('affectedRows: ',obj.affectedRows);
-					drawGrix();
-				});
-			} else {
-				drawGrix();
-			}
+
+			for (var i = 0; i < arCEsFound.length; i++) {
+				var ix = arCEsUsed.indexOf(arCEsFound[i]);
+				// console.log('ix: ',ix);
+				if (ix > -1) {
+				    arCEsUsed.splice(ix, 1);
+				}
+			};
+			if (debug) updateDebug();
+
+			drawGrix();
 
 		}
 
@@ -508,26 +481,15 @@
 			var obEl = getTarget(id);
 
 			obCol.elements.splice(getIndex(id),1);
+			// console.log('obEl.id: ',obEl.id);
+			var ix = arCEsUsed.indexOf(parseInt(obEl.id));
+			// console.log('ix: ',ix);
+			if (ix > -1) {
+			    arCEsUsed.splice(ix, 1);
+			}
+			drawGrix();
 
-			$.ajax({
-				type: 'POST',
-				data: {
-					'action':'updateUsedCEs',
-					'ces': [obEl.id],
-					'articleId': obCfg.articleId,
-					'REQUEST_TOKEN': Contao.request_token
-				},
-				dataType: 'json',
-				cache: false		     	
-
-			}).done(function(obj) {
-				// console.log('UsedCEs: ',obj.usedCEs);
-				// console.log('CEsToDelete: ',obj.CEsToDelete);
-				// console.log('newUsedCEs: ',obj.newUsedCEs);
-				// console.log('affectedRows: ',obj.affectedRows);
-				drawGrix();
-			});	
-
+			if (debug) updateDebug();
 		}
 
 		function deleteElement(el){
@@ -586,49 +548,24 @@
 			// add the choosen css classes to the col
 			obCol.classes = obLbCfg.arClasses;
 
-			// console.log('obLbCfg.arCEs: ',obLbCfg.arCEs);
-			if (!obLbCfg.arCEs.length) {
-				drawGrix();
-			} else {
-				// CEs have been selected in the lightbox
-				for (var i = 0; i < obLbCfg.arCEs.length; i++) {
+			// add the choosen CEs to the col
+			for (var i = 0; i < obLbCfg.arCEs.length; i++) {
 
+				var obCE = new GrixCE();
+				obCE.id = String(obLbCfg.arCEs[i]);
 
-					var obCE = new GrixCE();
-					obCE.id = String(obLbCfg.arCEs[i]);
-					// var obNewCE = {
-					// 	type: "ce",
-					// 	id: String(obLbCfg.arCEs[i])
-					// };
-					obCol.elements.push(obCE);
-					$('#grixce_'+obLbCfg.arCEs[i]).clone().appendTo('.grix_celist');
-				};
-				// console.log('obCol.elements: ',obCol.elements);
-				// console.log('obCfg.articleId: ',obCfg.articleId);
+				obCol.elements.push(obCE);
+				$('#grixce_'+obLbCfg.arCEs[i]).clone().appendTo('.grix_celist');
 
-				// update the CEsUsed-field of the article
-				$.ajax({
-					type: 'POST',
-					url: 'system/modules/gp_grix/ajax/ajax.php',
-					data: {
-						articleId: obCfg.articleId,
-						arCEs: JSON.stringify(obLbCfg.arCEs),
-						grixAction: 'insertce',
-						'REQUEST_TOKEN':Contao.request_token
-					},
-					// dataType: 'json',
-					success: function(msg){
-						// console.log('insertce-message: ',msg);
-						drawGrix();
-					},
-					error: function (xhr, textStatus, errorThrown) {
-						alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
-					}
-				});
-
+				arCEsUsed.push(obLbCfg.arCEs[i]);
 			};
-			
 
+			if (debug) {
+				$('#DbgCEsUsedNr').text(arCEsUsed.length);
+				$('#DbgCEsUsedArr').text(arCEsUsed.join(','));
+			};
+
+			drawGrix();
 		}
 
 

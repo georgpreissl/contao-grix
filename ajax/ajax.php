@@ -111,7 +111,7 @@ if(RequestToken::validate(Input::post('REQUEST_TOKEN')))
 			{
 				if (!in_array($id, $arrUsedCEs)) 
 				{
-				    $arrUsedCEs[] = $id;
+				    $arrUsedCEs[] = intval($id);
 				}
 			}
 

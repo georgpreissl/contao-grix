@@ -559,7 +559,8 @@
 .grix_preview .grix .r {
 
 }
-.grix .grix_grid > .r:only-child > .r_menu > a.del_row {
+.grix .grix_grid > .r:only-child > .r_menu > a.del_row, 
+.grix .grix_grid > .r:only-child > .r_menu > a.reorder {
    display: none;
 
 }

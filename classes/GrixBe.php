@@ -70,7 +70,8 @@ class GrixBe extends \BackendModule
 		{
 			$objTemplate = new \BackendTemplate('mod_grix_help');
 			$this->Template = $objTemplate;
-			return $this->Template->parse();;		
+			return;
+					
 		}
 
 
@@ -84,6 +85,14 @@ class GrixBe extends \BackendModule
 			// save the js string
 			$grixJs = $_POST['grixJs'];
 			$this->Database->prepare("UPDATE tl_article SET grixJs=? WHERE id=?")->execute($grixJs, $id);
+
+			// save the CEsUsed Value
+			$CEsUsed = $_POST['CEsUsed'];
+			$CEsUsed = json_decode($CEsUsed,TRUE);
+			$CEsUsed = serialize($CEsUsed);
+			// var_dump($CEsUsed);
+			$this->Database->prepare("UPDATE tl_article SET CEsUsed=? WHERE id=?")->execute($CEsUsed, $id);
+
 		}
 
 
@@ -93,6 +102,9 @@ class GrixBe extends \BackendModule
 		// get all the CEs of this article created by Grix
 		$objCEsUsed = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($id);
 		$arrCEsUsed = unserialize($objCEsUsed->CEsUsed);
+
+// var_dump($arrCEsUsed);
+
 		if ($arrCEsUsed == false) 
 		{
 			$arrCEsUsed = array();
@@ -169,6 +181,7 @@ class GrixBe extends \BackendModule
 
 		$this->Template->id = $id;
 		$this->Template->data = $strData;
+		$this->Template->CEsUsed = json_encode($arrCEsUsed);
 		$this->Template->grixHtmlFrontend = $grixHtmlFrontend;
 		$this->Template->ces = $arrCEsOverall;
 		$this->Template->action = ampersand(\Environment::get('request'));
@@ -189,10 +202,12 @@ class GrixBe extends \BackendModule
 		$this->Template->classes = $arrClasses;
 
 		// for debugging
-		$this->Template->CEsNr = $intCEsNr;
-		$this->Template->CEs = count($arrCEs) ? 'IDs: ' . implode(", ", $arrCEs) : '';
-		$this->Template->CEsUsedNr = $intCEsUsedNr;
-		$this->Template->CEsUsed = count($arrCEsUsed) ? 'IDs: ' . implode(", ", $arrCEsUsed) : '';
+		$this->Template->DbgCEsNr = $intCEsNr;
+		$this->Template->DbgCEs = count($arrCEs) ? 'IDs: ' . implode(", ", $arrCEs) : '';
+		$this->Template->DbgCEsUsedNr = $intCEsUsedNr;
+		$this->Template->DbgCEsUsed = count($arrCEsUsed) ? implode(", ", $arrCEsUsed) : '';
+		
+		
 
 		
 	}

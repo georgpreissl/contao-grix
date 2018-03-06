@@ -167,6 +167,7 @@
 		<input type="hidden" name="FORM_SUBMIT" value="tl_grix">
 		<input type="hidden" name="REQUEST_TOKEN" value="<?= REQUEST_TOKEN ?>">
 		<input type="hidden" name="articleId" value="<?= $this->id ?>">
+		<input type="hidden" name="CEsUsed" value="<?= $this->CEsUsed ?>">
 
 	 	<div class="grix_input_wrap">
 			<textarea class="grix_input" name="grixJs" id="ctrl_grixJson" ><?= $this->data ?></textarea>
@@ -204,12 +205,12 @@
 		<div class="grix_debuginfo_article">
 			
 			<h2>Content elements contained in this article</h2>
-			<p>Number: <?= $this->CEsNr; ?></p>
-			<p><?= $this->CEs; ?></p>
+			<p>Number: <?= $this->DbgCEsNr; ?></p>
+			<p><?= $this->DbgCEs; ?></p>
 			<br>
 			<h2>Content elements used in the grix grid above</h2>
-			<p>Number: <?= $this->CEsUsedNr; ?></p>
-			<p><?= $this->CEsUsed; ?></p>
+			<p>Number: <span id="DbgCEsUsedNr"><?= $this->DbgCEsUsedNr; ?></span></p>
+			<p>IDs: <span id="DbgCEsUsedArr"><?= $this->DbgCEsUsed; ?></span></p>
 		</div>		
 				
 
@@ -338,6 +339,7 @@
 			var obCfg = {
 				articleId : <?= $this->id ?> ,
 				data : obData,
+				CEsUsed : <?= $this->CEsUsed ?>,
 				grixLightbox : grixLightbox,
 				requTok : '<?= REQUEST_TOKEN ?>'
 			}
@@ -346,18 +348,7 @@
 			var grix = new Grix(obCfg);
 			grix.init();
 			
-			$('#grix_deleteAll').click(function(e){
-				// console.log('delete all');				
-				var obRow = new GrixRow();
-				obRow.addCol(new GrixCol());
-				var stJson = "["+JSON.stringify(obRow)+"]";
-				// console.log(stJson);
 
-				$('#ctrl_grixJson').val(stJson);
-
-				$('#grixBeForm').submit();
-				e.preventDefault();
-			})
 
 
 			// testing:
