@@ -1,0 +1,7 @@
+{
+    "name": "georgpreissl/gp_grix",
+    "description": "A Sitebuilder-Module for Contao",
+    "type": "plugin",
+    "minimum-stability": "dev",
+    "require": {}
+}

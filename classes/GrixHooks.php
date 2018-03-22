@@ -31,8 +31,9 @@ class GrixHooks extends \Backend {
 
 			$grixHtmlFrontend = $arrData['grixHtmlFrontend'];
 
-			$grixHtmlFrontend = preg_replace("/%u([0-9a-f]{3,4})/i","&#x\\1;",urldecode($grixHtmlFrontend));
-    		$grixHtmlFrontend =  html_entity_decode($grixHtmlFrontend,null,'UTF-8');;
+			// is this needed?????
+			// $grixHtmlFrontend = preg_replace("/%u([0-9a-f]{3,4})/i","&#x\\1;",urldecode($grixHtmlFrontend));
+			// $grixHtmlFrontend = html_entity_decode($grixHtmlFrontend,null,'UTF-8');;
 
 			$objTemplate->elements = array($grixHtmlFrontend);
 		}
@@ -99,88 +100,8 @@ class GrixHooks extends \Backend {
         	// $dc->table  ... is 'tl_article'!
         	// $dc->id     ... is the id of the current edited article
  
-		if ($strAction == 'updateUsedCEs') 
-		{
-			// echo \Environment::get('isAjaxRequest');
 
-			$articleId = \Input::post('articleId');
-			// echo $articleId;
-			$CEsToDelete = \Input::post('ces') ? \Input::post('ces') : array();
-			// echo  gettype($CEsToDelete);
-			$result = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($articleId);
-			
-			$arrUsedCEs = unserialize($result->CEsUsed);
-
-			if (!is_array($arrUsedCEs)) {
-				$arrUsedCEs = array();
-			}
-
-			$newUsedCEs = array();
-			foreach ($arrUsedCEs as $key => $id) {
-				if (!in_array($id, $CEsToDelete)) {
-				    $newUsedCEs[] = $id;
-				}
-			}
-
-			$data = serialize($newUsedCEs);
-			$resultFinal = $this->Database->prepare("UPDATE tl_article SET CEsUsed=? WHERE id=?")->execute($data, $articleId);
-
-			echo json_encode(array 
-			(
-			    'usedCEs'      => $arrUsedCEs,
-			    'CEsToDelete'          => $CEsToDelete,
-			    'newUsedCEs'          => $newUsedCEs,
-			    'affectedRows'=> $resultFinal->affectedRows,
-			    'token'        => REQUEST_TOKEN 
-			));  
-            exit;
-			/*
-            */	
-		}
-
-
-		if ($strAction == 'jobo') 
-		{
-			// echo 'asdf';
-			// echo \Environment::get('isAjaxRequest');
-
-			$objRows = $this->Database->prepare("UPDATE tl_article SET title = ? WHERE id=?")->execute('asdfl',5);
-
-			echo json_encode(array 
-			( 
-			    'content'    => 'done!' ,
-			    'device'=> $objRows->id,
-			    'token'        => REQUEST_TOKEN 
-			));  
-            exit; 			
-		}
-
-
-		// funktioniert NICHT!!!
-		// speichert im NULL in grixJs !!!
-        if ($strAction == 'saveBeforeAddCE')
-        {
-        	$articleId = \Input::post('articleId');
-        	// $grixJs = \Input::post('grixJs');
-$grixjs = $_POST['grixJs'];
-
-
-// $grixJs = substr($grixJs, 1, -1);
-// $grixJs = "'".$grixJs."'";
-
-			$objResult = $this->Database->prepare("UPDATE tl_article SET grixJs=? WHERE id=?")->execute($grixjs, $articleId);
-// $objResult = \Database::getInstance()->prepare("UPDATE tl_article SET grixJs=? WHERE id=?")->execute($grixjs, $articleId);
-
-
-			echo json_encode(array 
-			( 
-			    'content'    => 'done!' ,
-			    'device'=> $objResult->affectedRows,
-			    'token'        => REQUEST_TOKEN 
-			));  
-            exit; 
-		}
-
+		// Save with ajax – due to cache problems not working :(
 
         if ($strAction == 'saveGrix')
         {
@@ -200,7 +121,10 @@ $grixjs = $_POST['grixJs'];
             exit; 
             
         }        
- 
+
+ 		
+ 		// load the content elements in the grix lightbox
+
         if ($strAction == 'loadGrixCEs')
         {
 
@@ -228,14 +152,15 @@ $grixjs = $_POST['grixJs'];
 			echo json_encode(array 
 			( 
 			    'content'    => $html, 
-			    'token'        => REQUEST_TOKEN 
+			    'token'      => REQUEST_TOKEN 
 			));  
             exit; 
         }  
     }
 
 
-	// Add a CSS file to the options
+	// Add a CSS file to the layout options
+
 	public function addBootstrapFramework($strName)
 	{
 	    if ($strName == 'tl_layout')

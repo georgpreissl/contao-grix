@@ -1070,7 +1070,7 @@
 		}
 
 
-		// Save with Ajax – due to cache problems not working :(
+		// Save with ajax – due to cache problems not working :(
 
 		function saveGrix(){
 			$grix.addClass('saving');
