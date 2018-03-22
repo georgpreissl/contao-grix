@@ -2,11 +2,7 @@
     "name": "georgpreissl/gp_grix",
     "description": "A Sitebuilder-Module for Contao",
     "type": "plugin",
-<<<<<<< Updated upstream
     "minimum-stability": "stable",
-=======
-    "minimum-stability": "dev",
     "license": "LGPL-3.0+",
->>>>>>> Stashed changes
     "require": {}
 }
