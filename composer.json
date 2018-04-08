@@ -14,7 +14,7 @@
         }
     ],
     "type": "contao-bundle",
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "license": "LGPL-3.0+",
     "require": {
         "php": ">=5.4",
