@@ -13,6 +13,9 @@
             "email": "fampreissl@gmail.com"
         }
     ],
+    "autoload": {
+        "classmap": [""]
+    },
     "type": "contao-bundle",
     "minimum-stability": "dev",
     "license": "LGPL-3.0+",
