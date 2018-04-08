@@ -17,7 +17,7 @@
     "minimum-stability": "dev",
     "license": "LGPL-3.0+",
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.6",
         "contao/core-bundle":"~3.2 || ^4.4.1",
         "contao-community-alliance/composer-plugin":"~2.4 || ~3.0"
     },
@@ -25,10 +25,7 @@
         "contao": {
             "sources": {
                 "": "system/modules/gp_grix"
-            },
-            "runonce": [
-                "runonce/runonce.php"
-            ]
+            }
         }
     }
 }
