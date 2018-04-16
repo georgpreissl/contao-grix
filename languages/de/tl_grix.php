@@ -3,7 +3,6 @@
 
 
 $GLOBALS['TL_LANG']['tl_grix']['reset'] = array('Zurücksetzen','');
-$GLOBALS['TL_LANG']['tl_grix']['headline'] = 'Erweiterung ID %s erstellen';
 
 $GLOBALS['TL_LANG']['tl_grix']['preview'] = 'Vorschau umschalten';
 
@@ -56,6 +55,8 @@ $GLOBALS['TL_LANG']['tl_grix']['bt_back'] = 'Zurück zur vorherigen Seite';
 $GLOBALS['TL_LANG']['tl_grix']['lbChooseArticle'] = 'Artikel auswählen:';
 $GLOBALS['TL_LANG']['tl_grix']['lbChooseCE'] = 'Inhaltselemente importieren';
 $GLOBALS['TL_LANG']['tl_grix']['lbChooseClasses'] = 'CSS-Klassen auswählen';
+$GLOBALS['TL_LANG']['tl_grix']['lbChooseConfig'] = 'Spaltenkonfiguration auswählen';
+$GLOBALS['TL_LANG']['tl_grix']['lbChooseConfigInfo'] = 'Hier können Sie für die verschieden Ausgabegrößen eine vordefinierte Spaltenkonfiguration auswählen. Alternativ können Sie in das Textfeld eine individuelle Konfiguration eingeben. Die Werte müssen dabei durch einen Bindestrich getrennt werden. (Z.B. "2-10" oder "1-10-1")';
 $GLOBALS['TL_LANG']['tl_grix']['lbCancel'] = 'Abbrechen';
 
 

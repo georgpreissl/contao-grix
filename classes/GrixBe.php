@@ -30,10 +30,6 @@ class GrixBe extends \BackendModule
 		/**
 		 * CSS & Javascripts
 		 */
-		if (TL_MODE=='FE') 
-		{
-			// $GLOBALS["TL_CSS"][] = "system/modules/gp_grix/assets/css/bootstrap.css";
-		}
 
 		if (TL_MODE=='BE')
 		{
@@ -65,13 +61,12 @@ class GrixBe extends \BackendModule
 		$id = \Input::get('id');
 
 
-		// if grix is activated in the backend-module-pannel
+		// if grix is activated in the backend-module-panel, show the help-template
 		if(!$id)
 		{
 			$objTemplate = new \BackendTemplate('mod_grix_help');
 			$this->Template = $objTemplate;
 			return;
-					
 		}
 
 
@@ -86,24 +81,17 @@ class GrixBe extends \BackendModule
 			$grixJs = $_POST['grixJs'];
 			$this->Database->prepare("UPDATE tl_article SET grixJs=? WHERE id=?")->execute($grixJs, $id);
 
-			// save the CEsUsed Value
+			// save the CEsUsed value
 			$CEsUsed = $_POST['CEsUsed'];
 			$CEsUsed = json_decode($CEsUsed,TRUE);
 			$CEsUsed = serialize($CEsUsed);
-			// var_dump($CEsUsed);
 			$this->Database->prepare("UPDATE tl_article SET CEsUsed=? WHERE id=?")->execute($CEsUsed, $id);
-
 		}
 
 
-
-
-
-		// get all the CEs of this article created by Grix
+		// get all the CEs of this article used by Grix
 		$objCEsUsed = $this->Database->prepare("SELECT CEsUsed from tl_article WHERE id=?")->execute($id);
 		$arrCEsUsed = unserialize($objCEsUsed->CEsUsed);
-
-// var_dump($arrCEsUsed);
 
 		if ($arrCEsUsed == false) 
 		{
@@ -131,24 +119,24 @@ class GrixBe extends \BackendModule
 
 
 	    // add the contao-created CEs to the collection
-		$arrOverall = array_merge($arrCEsUsed, $arrCEs);
+		$arrCEsAll = array_merge($arrCEsUsed, $arrCEs);
 		
 		// delete duplicates
-		$arrOverall = array_unique($arrOverall);
+		$arrCEsAll = array_unique($arrCEsAll);
 
 		// now we have all the CEs for this article
-		$objCEsOverall = \ContentModel::findMultipleByIds($arrOverall);
+		$objCEsAll = \ContentModel::findMultipleByIds($arrCEsAll);
 
 		// store all the CEs in an array
-		$arrCEsOverall = array();
-		if ($objCEsOverall !== null)
+		$arrCEsData = array();
+		if ($objCEsAll !== null)
 		{
-		 	while ($objCEsOverall->next())
+		 	while ($objCEsAll->next())
 			{
 				$arrCE = array();
-				$arrCE['html'] = \Controller::getContentElement($objCEsOverall->current(),'main');
-				$arrCE['id'] = $objCEsOverall->id;
-				$arrCEsOverall[] = $arrCE;
+				$arrCE['html'] = \Controller::getContentElement($objCEsAll->current(),'main');
+				$arrCE['id'] = $objCEsAll->id;
+				$arrCEsData[] = $arrCE;
 			}
 		}
 
@@ -181,25 +169,31 @@ class GrixBe extends \BackendModule
 
 		$this->Template->id = $id;
 		$this->Template->data = $strData;
-		$this->Template->CEsUsed = json_encode($arrCEsUsed);
 		$this->Template->grixHtmlFrontend = $grixHtmlFrontend;
-		$this->Template->ces = $arrCEsOverall;
+
+		// id's of the used CEs
+		$this->Template->x = $arrCEsUsed;
+		$this->Template->CEsUsed = json_encode($arrCEsUsed);
+
+		// html data of the content elements
+		$this->Template->ces = $arrCEsData;
+
+		// form action attribute
 		$this->Template->action = ampersand(\Environment::get('request'));
-		// $this->Template->href = $this->getReferer(true);
-		// $this->Template->referer = 'javascript:history.go(-1)';
-		$this->Template->title = specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']);
-		$this->Template->lc = file_get_contents(TL_ROOT . '/system/modules/gp_grix/assets/img/lb-icons/lb-close.svg');
 
-		// not working, why?	
-        $this->Template->headline = sprintf($GLOBALS['TL_LANG']['tl_grix']['headline'], \Input::get('id'));
-
-		$this->Template->submit = specialchars($GLOBALS['TL_LANG']['MSC']['save']);		
-		$this->Template->delete = specialchars($GLOBALS['TL_LANG']['tl_grix']['reset'][0]);		
-		$this->Template->button = $GLOBALS['TL_LANG']['MSC']['backBT'];
-		$this->Template->lbChooseCE = specialchars($GLOBALS['TL_LANG']['tl_grix']['lbChooseCE'][0]);		
-
+		// lightbox data
 		$this->Template->allArticles = $this->getArticleAlias($id);
 		$this->Template->classes = $arrClasses;
+
+		// languages – back link
+		$this->Template->referer = $this->getReferer() . '?do=article';
+		$this->Template->button = $GLOBALS['TL_LANG']['MSC']['backBT'];
+		$this->Template->backBTTitle = specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']);
+
+		// languages – ui elements
+		$this->Template->submit = specialchars($GLOBALS['TL_LANG']['MSC']['save']);		
+		$this->Template->delete = specialchars($GLOBALS['TL_LANG']['tl_grix']['reset'][0]);		
+		$this->Template->lbChooseCE = specialchars($GLOBALS['TL_LANG']['tl_grix']['lbChooseCE'][0]);		
 
 		// for debugging
 		$this->Template->DbgCEsNr = $intCEsNr;

@@ -15,15 +15,31 @@
 				// choose the units config for a row by click
 				$('.grix_lb_unitsconf').click(function(e) {
 					$(this).addClass('selected').siblings().removeClass('selected');
+
+					// empty then custom input field when a predefined option is selected
+					if(!$(this).hasClass('grix_lb_unitsconf_custom')) {
+						$(this).siblings('.grix_lb_unitsconf_custom').find('input').val('');
+					}
 					e.preventDefault();
 				});
 
 				// choose the units config for a row by text input
-				$('.grix_lb_unitsconf_custom').change(function(e) {
+				$('.grix_lb_unitsconf_custom input').change(function(e) {
 					console.log('change');
 					var val = $(this).val();
-					$(this).parent().addClass('selected').siblings().removeClass('selected');
-					$(this).parent().data('config',val);
+					if ($(this).val() != '') {
+						$(this).parent().addClass('selected').siblings().removeClass('selected');
+						$(this).parent().data('config',val);
+					};
+					e.preventDefault();
+				});
+
+				// dont select a configuration if the text input is left empty
+				$('.grix_lb_unitsconf_custom input').blur(function(e) {
+					var val = $(this).val();
+					if (val == '') {
+						$(this).parent().removeClass('selected');
+					};
 					e.preventDefault();
 				});
 
@@ -74,8 +90,9 @@
 				$('#grix_lb_apply').click(function(e){
 
 					// collect the selected unit-configs for a row
-					$('.grix_lb_uc.selected').each(function(i,el){
-						self.obCfg.unitsConf[$(el).data('device')] = $(el).data('config');
+					$('.grix_lb_unitsconf.selected').each(function(i,el){
+						var dev = $(el).data('device');
+						self.obCfg.unitsConf[dev] = $(el).data('config');
 					});
 
 					// collect the selected CEs
@@ -141,12 +158,14 @@
 					// Mark the choosen units config as selected
 					$('.grix_lb_colmenu').each(function(index, el) {
 						var stUnCfg = obClicked.unitsConf[arDevices[index]];
-						// console.log('stUnCfg: ',stUnCfg);
+						console.log('stUnCfg: ',stUnCfg);
+
 						var $unConf = $(this).find('*[data-config="'+stUnCfg+'"]');
 						if ($unConf.length) {
 							$unConf.addClass('selected');
 						} else {
-							$('.grix_lb_colmenu').find('.grix_lb_unitsconf_custom').val(stUnCfg);
+							$(this).find('.grix_lb_unitsconf_custom input').val(stUnCfg);
+							$(this).find('.grix_lb_unitsconf_custom').addClass('selected');
 						}
 					});
 				};
@@ -168,7 +187,7 @@
 				$('.grix_lb_ce').removeClass('selected');
 
 				$('.grix_lb_unitsconf_custom').each(function(index, el) {
-					$(this).val('');
+					$(this).find('input').val('');
 				});
 
 				$('body').removeClass('grix_lb_active grix_lb_row grix_lb_col');

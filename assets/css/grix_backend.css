@@ -565,7 +565,8 @@
 
 }
 .grix .r > .r_content > .c:only-child a.del_col {
-   /* display: none; */
+   display: none;
+   border: 1px solid red;
 }
 .grix .r .r_content {
 	padding: 0.4rem 0.4rem 0.3rem 0.4rem;
@@ -898,8 +899,13 @@
 	/* border: 1px solid red; */
 	/* overflow-y: scroll; */
 }
-.grix_lb h1 {
-	margin:0 0 1rem 0;
+.grix_lb h1.ghl {
+	margin: 0 0 1rem 0;
+	font-size: .8rem;
+}
+.grix_lb h2.ghl {
+	margin:0 0 .8rem 0;
+	font-size: .7rem;
 }
 .grix_lb_row .grix_lb_overview {
 	display: none;
@@ -948,6 +954,7 @@
 .grix_lb_unitsconf_wrap {
 	display: flex;
 	justify-content: space-between;
+	margin-bottom: 1rem;
 }
 .conf {
 	flex-basis: 23%;
@@ -966,12 +973,27 @@
 	display: block;
 }
 .grix_lb_unitsconf.selected .grix_lb_column span {
-	background-color: rgba(129,194,26,.5);
+	background-color: #c1dca9;
 }
-.grix_lb_unitsconf_custom {
+.grix_lb_unitsconf_custom.selected input {
+	background-color: rgba(129,194,26,.1);
+	border: 1px solid #c1dca9;
+}
+.grix_lb_unitsconf_custom input {
 	display: block;
 	width: 100%;
-	padding: .2rem;
+	padding: .4rem;
+	font-size: .8rem;
+	border: 1px solid #ccc;
+}
+.grix_lb_info {
+	max-width: 40rem;
+	
+}
+.grix_lb_info p {
+	font-size: .8rem;
+	color: #666;
+	text-align: left;
 }
 .grix_lb a.button:hover {
 	background-color: #ddd;
@@ -1073,7 +1095,7 @@
 	
 }
 .grix_lb .grix_lb_section {
-	margin-bottom: 1rem;
+	margin-bottom: 2rem;
 }
 .grix_lb_articles {
 	margin-bottom: 1rem;

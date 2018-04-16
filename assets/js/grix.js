@@ -3,18 +3,12 @@
 
 	window.Grix = function(obCfg){
 		var debug = false;
+		var boLbActive = false;
 		var obData = obCfg.data;
-
-		var arCEsUsed = [];
-		for (var key in obCfg.CEsUsed) {
-		    if (obCfg.CEsUsed.hasOwnProperty(key)) {
-		        arCEsUsed.push(parseInt(obCfg.CEsUsed[key]));
-		    }
-		}
-
+		var arCEsUsed = obCfg.CEsUsed;
 		var level = 0;
 		var arAct = [];
-		var arResKeys = [38,40,49,50,51,52,83,37,39,27,32];
+		var arResKeys = [38,40,49,50,51,52,83,37,39,27,32,68];
 		var arBootProps = ['width','offset','push','pull','margin'];
 		var arDevices = ['xs','sm','md','lg'];
 		var device = 'lg';
@@ -37,13 +31,13 @@
 
 			$(document).keydown(function(e){
 				var key = e.keyCode;
-				// console.log(key);
+				//console.log(key);
 
-			    if (arResKeys.indexOf(key) != -1) {
+			    if (arResKeys.indexOf(key) != -1 && !boLbActive) {
 
 				    // save
 					if((e.ctrlKey || e.metaKey) && e.which == 83) $('input.grix_save').trigger('click');
-
+					
 					// change device
 					if (key == 49) $('.grix_device_xs').trigger('click');
 					if (key == 50) $('.grix_device_sm').trigger('click');
@@ -59,7 +53,10 @@
 					if (key == 40 && arAct.length) $('.grix_bt_margin_plus').trigger('click');
 
 				    // esc-key – unselect every column
-				    if (key == 27) $('.grix_deselect').trigger('click');
+				    if (key == 27) deselect();
+
+				    // d and command – duplicate element
+				    if (key == 68 && (e.ctrlKey || e.metaKey)) duplicate();
 
 				    // space bar – toggle preview
 				    if (key == 32) $body.toggleClass('grix_preview');
@@ -72,10 +69,8 @@
 				arCEsUsed = [];
 				var obRow = new GrixRow();
 				obRow.addCol(new GrixCol());
-				var stJson = "["+JSON.stringify(obRow)+"]";
+				var stJson = '['+JSON.stringify(obRow)+']';
 				$('#ctrl_grixJson').val(stJson);
-				$('#grixBeForm').submit();
-				e.preventDefault();
 			})
 
 			$('.grix_device').click(function(e){
@@ -110,8 +105,8 @@
 				    	var obEl = getTarget(arAct[i]);
 
 						if (dir == 'remove') {
-							nrV = '';
-						} else{
+							var nrV = '';
+						} else {
 							var nrMin = 0;
 							var nrMax = 12;
 							var nrV = '';
@@ -119,30 +114,30 @@
 							if (prop == 'width') nrMin = 1;
 							if (prop == 'margin') nrMax = 20;
 
+							// determine the current value of the property
 							for (var dev in obEl[prop]) {
 								var cv = obEl[prop][dev];
 								if (cv != '') nrV = cv;
 								if (dev == device) break;
 							};
 
-							// no value has been set yet
+							// if no value has been set yet
 					    	if (nrV == '') {
-								if (prop == 'width') {
-						    		nrV = 12;
-								} else {
-						    		nrV = 0;
-								}
-					    	};
-					    	
+								nrV = prop == 'width' ? 12 : 0;
+					    	}
+
+					    	// change the value
 					    	nrV = parseInt(nrV);
 							dir == 'minus' ? nrV-- : nrV++;
 							if (nrV < nrMin) nrV = nrMin;
 							if (nrV > nrMax) nrV = nrMax;
-						};
+						}
 
-				    	$('.info_'+prop).text(nrV);
+						// assign the new value
 					    obEl[prop][device] = String(nrV);
 					    // eg: obEl.width.lg = 6
+
+				    	$('.info_'+prop).text(nrV);
 
 					    // adapt unitsConf of parent row
 						if(obEl.type=='col' && prop=='width') {
@@ -162,35 +157,9 @@
 			});
 
 
-			$('.grix_deselect').click(function(e) {
-				arAct = [];
-				$('.x').removeClass('active');
-				$grix.removeClass('act_row act_col act_ce');
-				$('.info').text('');
-			});
+			$('.grix_deselect').click(deselect);
 
-			$('.grix_back').click(function(e) {
-				history.go(-1);
-			});
-
-			$('.grix_duplicate').click(function(e) {
-				for (var i = 0; i < arAct.length; i++) {
-					var id = String(arAct[i]);
-					var obT = getTarget(id);
-
-					var arCEsFound = scanForCEs(obT,[]);
-					// console.log('arCEsFound: ',arCEsFound);
-					for (var i = 0; i < arCEsFound.length; i++) {
-						arCEsUsed.push(arCEsFound[i]);
-					};
-					if (debug) updateDebug();
-
-					var obP = getTarget(id,1);
-					var obTCopy = JSON.parse(JSON.stringify(obT));
-					obP.elements.splice(getIndex(id), 0, obTCopy);
-					drawGrix();
-				};
-			});
+			$('.grix_duplicate').click(duplicate);
 
 			$('#grixBeForm').submit(function() {
 				var stCEsUsed = JSON.stringify(arCEsUsed);
@@ -203,7 +172,6 @@
 			// });
 
 		}
-
 
 
 		function getTarget(el,ix){
@@ -228,14 +196,41 @@
 		}
 
 		function scanForCEs(obj,ar){
-			if (obj.type == 'ce') ar.push(parseInt(obj.id));
+			if (obj.type == 'ce') ar.push(obj.id);
 			if (obj.elements) {
 				for (var i = 0; i < obj.elements.length; i++) {
 					ar = scanForCEs(obj.elements[i],ar);
 				};
 			};
 			return ar;
-		};		
+		};
+
+		function deselect(){
+			arAct = [];
+			$('.x').removeClass('active');
+			$grix.removeClass('act_row act_col act_ce');
+			$('.info').text('');	
+		}
+
+		function duplicate(){
+			for (var i = 0; i < arAct.length; i++) {
+				var id = String(arAct[i]);
+				var obT = getTarget(id);
+
+				var arCEsFound = scanForCEs(obT,[]);
+				// console.log('arCEsFound: ',arCEsFound);
+				for (var i = 0; i < arCEsFound.length; i++) {
+					arCEsUsed.push(arCEsFound[i]);
+				};
+				if (debug) updateDebug();
+
+				var obTCopy = JSON.parse(JSON.stringify(obT));
+				var obP = getTarget(id,1);
+				obP.elements.splice(getIndex(id), 0, obTCopy);
+				drawGrix();
+			};
+		}
+
 
 		// row functions
 
@@ -264,17 +259,11 @@
 			drawGrix();
 		}
 
-
 		function reorderRow(el,stDir){
 			var obP = getTarget(el,1);
-			// console.log('obP: ',obP);
-
 			var nrSwapIx;
 			var arRows = obP.elements;
-
 			var nrPos = parseInt(getIndex(el));
-			// console.log('nrPos: ',nrPos);
-
 			var obRow = obP.elements[nrPos];
 
 			if (stDir == 'up') {
@@ -282,7 +271,6 @@
 			} else {
 				nrSwapIx = (nrPos+1 == arRows.length ? 0 : nrPos+1);
 			};
-			// console.log('nrSwapIx: ',nrSwapIx);
 			arRows[nrPos] = arRows[nrSwapIx];
 			arRows[nrSwapIx] = obRow;
 			drawGrix();
@@ -293,23 +281,18 @@
 			var obT = getTarget(el);
 
 			var arCEsFound = scanForCEs(obT,[]);
-			// console.log('arCEsFound: ',arCEsFound);
 
 			obP.elements.splice(getIndex(el),1);
 
 			for (var i = 0; i < arCEsFound.length; i++) {
 				var ix = arCEsUsed.indexOf(arCEsFound[i]);
-				// console.log('ix: ',ix);
-				if (ix > -1) {
-				    arCEsUsed.splice(ix, 1);
-				}
+				if (ix > -1) arCEsUsed.splice(ix, 1);
 			};
 			if (debug) updateDebug();
 			drawGrix();
 		}
 
 		function splitCol(el,stUnits){
-
 			var obRow = getTarget(el);
 			obRow.unitsConf[device] = stUnits;
 			var arCols = obRow.elements;
@@ -317,11 +300,9 @@
 
 			// how many cols do we have
 			var nrColsOld = arCols.length;
-			// console.log('nrColsOld: ',nrColsOld);
 
 			// how many cols do we need at least
 			var nrColsNew = arUnits.length;
-			// console.log('nrColsNew: ',nrColsNew);
 
 			if (nrColsNew > nrColsOld) {
 				var nrColsToCreate = nrColsNew - nrColsOld;
@@ -355,11 +336,9 @@
 		function addCE(el){
 			var stPhId = el.data('id');
 
-			// Serialize the data in the form
 			var stFormData = $("#grixBeForm").serialize();
 			stFormData += '&grixAction=save';
-			// console.log(stFormData);
-			// return;
+
 			// Save the current status
 			$.ajax({
 				type: 'POST',
@@ -376,8 +355,6 @@
 			});
 		}
 
-
-
 		function insertRow(el){
 			var obCol = getTarget(el);
 
@@ -389,8 +366,12 @@
 		}
 
 		function deleteCol(el){
+
+			deselect();
+
 			var obRow = getTarget(el,1);
 			var obCol = getTarget(el);
+
 			// console.log(obRow.elements.length);
 
 			// dont delete the last column
@@ -441,10 +422,7 @@
 
 			for (var i = 0; i < arCEsFound.length; i++) {
 				var ix = arCEsUsed.indexOf(arCEsFound[i]);
-				// console.log('ix: ',ix);
-				if (ix > -1) {
-				    arCEsUsed.splice(ix, 1);
-				}
+				if (ix > -1) arCEsUsed.splice(ix, 1);
 			};
 			if (debug) updateDebug();
 
@@ -458,7 +436,7 @@
 
 
 		function editElement(el){
-
+			// save the current status
 			$.ajax({
 				method: 'post',
 				url: 'system/modules/gp_grix/ajax/ajax.php',
@@ -471,22 +449,19 @@
 					alert('ajax error ' + (errorThrown ? errorThrown : xhr.status));
 				}
 			});
-
 		}
 
 		function removeElement(el){
 			// remove the element, don't delete it permanently
+			deselect();
 			var id = el.data('id');
 			var obCol = getTarget(id,1);
 			var obEl = getTarget(id);
-
 			obCol.elements.splice(getIndex(id),1);
-			// console.log('obEl.id: ',obEl.id);
-			var ix = arCEsUsed.indexOf(parseInt(obEl.id));
-			// console.log('ix: ',ix);
-			if (ix > -1) {
-			    arCEsUsed.splice(ix, 1);
-			}
+
+			var ix = arCEsUsed.indexOf(obEl.id);
+			if (ix > -1) arCEsUsed.splice(ix, 1);
+
 			drawGrix();
 
 			if (debug) updateDebug();
@@ -519,6 +494,7 @@
 		}
 
 		function adjustRow(obRow, obCfgLb){
+			boLbActive = false;
 			// add the choosen css classes to the row
 			obRow.classes = obCfgLb.arClasses;
 
@@ -557,7 +533,7 @@
 				obCol.elements.push(obCE);
 				$('#grixce_'+obLbCfg.arCEs[i]).clone().appendTo('.grix_celist');
 
-				arCEsUsed.push(obLbCfg.arCEs[i]);
+				arCEsUsed.push(String(obLbCfg.arCEs[i]));
 			};
 
 			if (debug) {
@@ -766,6 +742,7 @@
 			})
 
 			$('.adj_row').click(function(e){
+				boLbActive = true;
 				obCfg.grixLightbox.activate({
 					'obTarget': getTarget($(this).parent()),
 					'callBackFunction': adjustRow
@@ -775,6 +752,7 @@
 			})
 
 			$('.adj_col').click(function(e){
+				boLbActive = true;
 				obCfg.grixLightbox.activate({
 					'obTarget': getTarget($(this).parent()),
 					'callBackFunction': adjustCol
@@ -822,7 +800,6 @@
 		
 
 		function checkIcon(el) {
-			// console.log(el);
 			var stConf = el.unitsConf[device];
 			if (arConfDefault.indexOf(stConf) < 0) stConf = 'unknown';
 			return "system/modules/gp_grix/assets/img/col-icons/col-icon-"+stConf+".svg";
