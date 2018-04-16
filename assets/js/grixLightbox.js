@@ -25,7 +25,7 @@
 
 				// choose the units config for a row by text input
 				$('.grix_lb_unitsconf_custom input').change(function(e) {
-					console.log('change');
+					//console.log('change');
 					var val = $(this).val();
 					if ($(this).val() != '') {
 						$(this).parent().addClass('selected').siblings().removeClass('selected');
@@ -48,7 +48,7 @@
 				// import CE's from other articles via dropdown menu
 				$(".grix_lb_articles select").change(function(){
 				    var nrArtId = $(this).val();
-				    console.log('nrArtId: ',nrArtId);
+				    //console.log('nrArtId: ',nrArtId);
 				    // php action is defined in GrixHooks.php
 					$.ajax({
 						type: 'POST',
@@ -62,7 +62,7 @@
 			        }).done(function(obj) {
 			        	// Insert the loaded CE's
 						$('.grix_lb_ces').html(obj.content);
-						console.log(obj);
+						//console.log(obj);
 					});	
 			        return false;
 				});

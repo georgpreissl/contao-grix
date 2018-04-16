@@ -1,6 +1,11 @@
 <?php 
 
 
+
+ 
+
+
+
 $GLOBALS['TL_DCA']['tl_article']['fields']['grixJs'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['grixJs'],
