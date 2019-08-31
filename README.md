@@ -1,7 +1,7 @@
-# gp_grix – Bootstrap-Sitebuilder für Contao 3.5
+# Grix – ein Bootstrap-Sitebuilder für Contao 3.5
 
 
-GRIX vereinfacht die Erstellung und Bearbeitung von grid-basierten Seiteninhalten in Contao.
+Grix vereinfacht die Erstellung und Bearbeitung von grid-basierten Seiteninhalten in Contao.
 
 
 ### Vorteile

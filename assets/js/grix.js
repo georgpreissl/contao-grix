@@ -2,7 +2,13 @@
 
 
 	window.Grix = function(obCfg){
-		var debug = false;
+
+
+
+var xi = obCfg.xi;
+//xi.m();
+
+		var debug = true;
 		var boLbActive = false;
 		var obData = obCfg.data;
 		var arCEsUsed = obCfg.CEsUsed;
@@ -222,7 +228,8 @@
 				for (var i = 0; i < arCEsFound.length; i++) {
 					arCEsUsed.push(arCEsFound[i]);
 				};
-				if (debug) updateDebug();
+				// if (debug) updateDebug();
+				if (debug) xi.m(arCEsUsed);
 
 				var obTCopy = JSON.parse(JSON.stringify(obT));
 				var obP = getTarget(id,1);

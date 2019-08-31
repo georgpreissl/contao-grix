@@ -49,6 +49,7 @@ class GrixBe extends \BackendModule
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/jquery-ui-1.12.1/jquery-ui.min.js';
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grixElement.js';
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grixLightbox.js';
+			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/test.js';
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/gp_grix/assets/js/grix.js';
 			$GLOBALS['TL_CSS'][] = 'system/modules/gp_grix/assets/css/grix_backend.css';
 			$GLOBALS["TL_CSS"][] = 'system/modules/gp_grix/assets/css/bootstrap_backend.css';

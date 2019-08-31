@@ -10,7 +10,6 @@
 	<div class="grix_loader">
 	</div>
 
-
 	<div class="grix_menu">
 
 
@@ -327,6 +326,9 @@
 	(function($){
 		$(document).ready(function(){
 
+
+			var xi = new X();
+
 			// Create a GrixLightbox instance
 			var grixLightbox = new GrixLightbox();
 			grixLightbox.bindEvents();
@@ -348,7 +350,8 @@
 				data : obData,
 				CEsUsed : <?= $this->CEsUsed ?>,
 				grixLightbox : grixLightbox,
-				requTok : '<?= REQUEST_TOKEN ?>'
+				requTok : '<?= REQUEST_TOKEN ?>',
+				xi : xi
 			}
 
 			// Create a Grix instance
